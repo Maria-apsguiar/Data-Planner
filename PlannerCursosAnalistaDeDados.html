@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trilha de Estudos & Planner: Análise de Dados</title>
+  <style>
+    /* ==========================================================================
+       VARIABLES & BASE STYLES
+       ========================================================================== */
+    :root {
+      --bg-primary: #0f172a;
+      --bg-card: #1e293b;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --success: #10b981;
+      --progress-color: #3b82f6;
+      --warning: #f59e0b;
+      --fire: #ef4444;
+      --radius: 12px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+      min-height: 100vh;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; }
+
+    header { margin-bottom: 2rem; text-align: center; }
+
+    h1 {
+      font-size: 2.25rem; font-weight: 800;
+      background: linear-gradient(135deg, #a5b4fc, #6366f1);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle { color: var(--text-muted); font-size: 1rem; }
+
+    /* STREAK & STATS HEADER */
+    .header-stats {
+      display: flex; justify-content: center; align-items: center; gap: 1.5rem;
+      margin-top: 1rem; flex-wrap: wrap;
+    }
+
+    .streak-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5; padding: 0.4rem 1rem; border-radius: 999px;
+      font-weight: 700; font-size: 0.95rem;
+    }
+
+    .progress-container {
+      background: var(--bg-card); padding: 1.25rem;
+      border-radius: var(--radius); border: 1px solid var(--border); margin-top: 1.5rem;
+    }
+
+    .progress-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+    .progress-bar-bg { height: 10px; background: var(--bg-primary); border-radius: 999px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--progress-color), var(--success)); transition: width 0.4s ease; }
+
+    /* WIDGETS SECTION (AGENDA + POMODORO) */
+    .widgets-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;
+    }
+    @media (max-width: 768px) { .widgets-grid { grid-template-columns: 1fr; } }
+
+    .widget-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem;
+    }
+
+    .widget-title {
+      font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    /* POMODORO STYLES */
+    .pomo-display {
+      font-size: 2.5rem; font-weight: 800; text-align: center;
+      font-mono: monospace; color: var(--accent); margin: 0.5rem 0;
+    }
+    .pomo-controls { display: flex; justify-content: center; gap: 0.5rem; }
+
+    /* AGENDA STYLES (MELHORADOS & MAIORES) */
+    .agenda-date-picker {
+      background: var(--bg-primary); border: 1px solid var(--border);
+      color: var(--text-main); padding: 0.3rem 0.6rem; border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .agenda-items { display: flex; flex-direction: column; gap: 0.75rem; max-height: 240px; overflow-y: auto; padding-right: 2px; }
+    
+    .agenda-item {
+      display: flex; flex-direction: column; gap: 0.4rem;
+      background: var(--bg-primary); padding: 0.8rem; border-radius: 8px;
+      font-size: 0.9rem; border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+
+    .agenda-item-header {
+      display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+    }
+
+    .agenda-item.checked { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
+    .agenda-item.checked .agenda-title { text-decoration: line-through; color: var(--text-muted); }
+
+    .agenda-title { font-weight: 600; font-size: 0.92rem; }
+
+    /* Checkbox de Check-in Maior e Estilizado */
+    .agenda-checkbox-label {
+      display: flex; align-items: center; gap: 0.5rem; cursor: pointer;
+      font-weight: 600; font-size: 0.85rem; color: var(--accent);
+      background: rgba(99, 102, 241, 0.1); padding: 0.3rem 0.6rem; border-radius: 6px;
+      transition: var(--transition); user-select: none;
+    }
+    .agenda-checkbox-label:hover { background: var(--accent); color: #fff; }
+
+    .agenda-checkbox {
+      width: 18px; height: 18px; accent-color: var(--success); cursor: pointer;
+    }
+
+    .agenda-canvas-note {
+      font-size: 0.78rem; color: #fde047; background: rgba(245, 158, 11, 0.1);
+      border-left: 3px solid var(--warning); padding: 0.4rem 0.6rem; border-radius: 4px;
+      line-height: 1.35; margin-top: 0.2rem;
+    }
+
+    /* TOOLBAR & FILTERS */
+    .toolbar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin: 1.5rem 0; flex-wrap: wrap; gap: 1rem;
+      background: var(--bg-card); padding: 1rem; border-radius: var(--radius); border: 1px solid var(--border);
+    }
+
+    .search-box {
+      background: var(--bg-primary); border: 1px solid var(--border);
+      color: var(--text-main); padding: 0.5rem 0.8rem; border-radius: 6px;
+      width: 100%; max-width: 250px; font-size: 0.85rem;
+    }
+
+    .btn-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+    .btn {
+      background: var(--border); color: var(--text-main); border: none;
+      padding: 0.5rem 0.8rem; border-radius: 6px; cursor: pointer;
+      font-size: 0.85rem; font-weight: 600; transition: var(--transition);
+    }
+    .btn:hover { background: var(--accent); color: #fff; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); }
+    .btn.active { background: var(--accent); color: #fff; }
+
+    .category-title { font-size: 1.25rem; margin: 2rem 0 1rem 0; color: #cbd5e1; border-left: 4px solid var(--accent); padding-left: 0.5rem; }
+
+    /* COURSE CARD & NOTES */
+    .course-list { display: flex; flex-direction: column; gap: 1rem; }
+    .course-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.25rem; display: flex; flex-direction: column; gap: 0.8rem;
+      transition: var(--transition);
+    }
+
+    .course-card-main { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+
+    .course-card.in_progress { border-color: rgba(59, 130, 246, 0.4); background: rgba(59, 130, 246, 0.02); }
+    .course-card.completed { border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.02); }
+    .course-card.completed .course-title-text { text-decoration: line-through; color: var(--text-muted); }
+
+    .course-info { display: flex; gap: 1rem; flex: 1; }
+
+    .status-btn {
+      width: 26px; height: 26px; border-radius: 6px; border: 2px solid var(--border);
+      background: var(--bg-primary); cursor: pointer; flex-shrink: 0; margin-top: 2px;
+      display: flex; align-items: center; justify-content: center; transition: var(--transition);
+    }
+    .status-btn:hover { border-color: var(--accent); }
+    
+    .status-btn.in_progress { border-color: var(--progress-color); background: rgba(59, 130, 246, 0.2); }
+    .status-btn.in_progress::after { content: "⏳"; font-size: 12px; }
+
+    .status-btn.completed { border-color: var(--success); background: var(--success); }
+    .status-btn.completed::after { content: "✓"; color: #fff; font-weight: bold; font-size: 14px; }
+
+    .badge { padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; background: var(--border); font-weight: 600; }
+    .badge.pending { background: var(--border); color: var(--text-muted); }
+    .badge.in_progress { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .badge.completed { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+
+    .links-group { display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end; }
+
+    .btn-link {
+      color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.85rem;
+      padding: 0.4rem 0.75rem; border-radius: 6px; background: rgba(99, 102, 241, 0.1); white-space: nowrap;
+      transition: var(--transition);
+    }
+    .btn-link:hover { background: var(--accent); color: #fff; }
+    .btn-link.alt-link { color: var(--warning); background: rgba(245, 158, 11, 0.1); }
+    .btn-link.alt-link:hover { background: var(--warning); color: #000; }
+
+    /* EXPANDABLE NOTES */
+    .notes-toggle {
+      background: transparent; border: none; color: var(--text-muted); font-size: 0.8rem;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem; margin-top: 0.2rem;
+    }
+    .notes-toggle:hover { color: var(--text-main); }
+
+    .notes-container { display: none; margin-top: 0.5rem; }
+    .notes-container.open { display: block; }
+    .notes-textarea {
+      width: 100%; background: var(--bg-primary); border: 1px solid var(--border);
+      color: var(--text-main); padding: 0.6rem; border-radius: 6px; font-size: 0.85rem;
+      resize: vertical; min-height: 60px;
+    }
+
+    /* TOAST MOTIVACIONAL */
+    .toast-container {
+      position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+      display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+    }
+
+    .toast {
+      background: linear-gradient(135deg, #4f46e5, #059669);
+      color: white; padding: 1rem 1.25rem; border-radius: var(--radius);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); font-weight: 600; font-size: 0.9rem;
+      max-width: 350px; animation: slideIn 0.3s ease, fadeOut 0.5s ease 4.5s forwards;
+      pointer-events: auto;
+    }
+
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+    @media (max-width: 640px) {
+      .course-card-main { flex-direction: column; }
+      .links-group { align-items: stretch; width: 100%; margin-top: 0.5rem; }
+      .btn-link { text-align: center; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Análise de Dados: Trilha de Estudos</h1>
+      <p class="subtitle">Planejador diário e acompanhamento de cursos complementares.</p>
+      
+      <div class="header-stats">
+        <div class="streak-badge">
+          🔥 <span id="streak-count">0</span> Dias Seguidos de Estudo
+        </div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-header">
+          <span>Progresso Geral</span>
+          <span id="progress-text">0 de 0 concluídos (0%)</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-bar"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- WIDGETS: AGENDA + POMODORO -->
+    <div class="widgets-grid">
+      <!-- WIDGET AGENDA -->
+      <div class="widget-card">
+        <div class="widget-title">
+          <span>📅 Agenda Diária</span>
+          <input type="date" id="agenda-date" class="agenda-date-picker" min="2026-07-26" max="2026-10-31">
+        </div>
+
+        <div id="agenda-items-container" class="agenda-items">
+          <!-- Cursos em andamento para a data aparecerão aqui -->
+        </div>
+      </div>
+
+      <!-- WIDGET POMODORO -->
+      <div class="widget-card">
+        <div class="widget-title">
+          <span>⏱️ Modo Foco (Pomodoro)</span>
+          <span id="pomo-mode-label" style="font-size: 0.8rem; color: var(--text-muted);">Foco (25m)</span>
+        </div>
+        <div class="pomo-display" id="pomo-timer">25:00</div>
+        <div class="pomo-controls">
+          <button class="btn" onclick="startPomodoro()">Iniciar</button>
+          <button class="btn btn-outline" onclick="pausePomodoro()">Pausar</button>
+          <button class="btn btn-outline" onclick="resetPomodoro()">Resetar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BARRA DE FERRAMENTAS -->
+    <div class="toolbar">
+      <input type="text" id="search-input" class="search-box" placeholder="🔍 Pesquisar curso ou assunto..." oninput="render()">
+
+      <div class="btn-group">
+        <button class="btn active" id="filter-all" onclick="setFilter('all')">Todos</button>
+        <button class="btn btn-outline" id="filter-pending" onclick="setFilter('pending')">Pendentes</button>
+        <button class="btn btn-outline" id="filter-in_progress" onclick="setFilter('in_progress')">Em andamento</button>
+        <button class="btn btn-outline" id="filter-completed" onclick="setFilter('completed')">Concluídos</button>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-outline" onclick="exportProgress()">📥 Exportar</button>
+        <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">📤 Importar</button>
+        <input type="file" id="import-file" style="display: none;" accept=".json" onchange="importProgress(event)">
+        <button class="btn" onclick="addNewCourse()">+ Criar Novo</button>
+      </div>
+    </div>
+
+    <main id="main-content"></main>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    // ==========================================================================
+    // DATA SOURCE & INITIAL STATE
+    // ==========================================================================
+    const initialCourses = [
+      {
+        id: "generation-canvas",
+        category: "Acompanhamento Diário",
+        title: "CURSO GENERATION - CANVAS",
+        provider: "Generation Brazil",
+        description: "Acesso diário (segunda a sexta). Confirme se participou das aulas síncronas e realizou todas as atividades dos professores.",
+        url: "https://generation.instructure.com/login/canvas",
+        status: "in_progress",
+        notes: ""
+      },
+      {
+        id: "coursera-google-analytics",
+        category: "Cursos Principais",
+        title: "Google Data Analytics Certificate",
+        provider: "Coursera / Google",
+        description: "Certificado Profissional de Análise de Dados do Google.",
+        url: "https://www.coursera.org/learn/foundations-data/lecture/aA1Wv/welcome-to-the-google-data-analytics-certificate",
+        altUrl: "https://portal.ciee.org.br/quero-me-preparar/google-tech/",
+        altUrlLabel: "Opção Gratuita (CIEE)",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "prof-luiz-chiavani",
+        category: "Cursos Principais",
+        title: "Curso de Análise de Dados - Professor Luiz Chiavani",
+        provider: "Prof. Luiz Chiavani",
+        description: "Material e aulas práticas de Análise de Dados do Prof. Luiz Chiavani.",
+        url: "https://luyz.vercel.app/data",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "cisco-compelling-reports",
+        category: "Cursos Principais",
+        title: "Creating Compelling Reports",
+        provider: "Cisco Networking Academy",
+        description: "Aprenda a criar relatórios impactantes e orientados a dados.",
+        url: "https://www.netacad.com/courses/compelling-reports?courseLang=en-US&instance_id=88c118e4-bcbb-40da-b7d1-51e272c387b9",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "cisco-data-analytics-essentials",
+        category: "Cursos Principais",
+        title: "Fundamentos da Análise de Dados",
+        provider: "Cisco Networking Academy",
+        description: "Conceitos essenciais e primeiros passos no ecossistema de dados.",
+        url: "https://www.netacad.com/courses/data-analytics-essentials?courseLang=pt-BR&instance_id=57ca6d6e-d0c8-438d-a536-a6208116b312",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "cisco-intro-data-science",
+        category: "Cursos Principais",
+        title: "Introdução à Ciência de Dados",
+        provider: "Cisco Networking Academy",
+        description: "Visão geral sobre Ciência de Dados, IA e Machine Learning.",
+        url: "https://www.netacad.com/courses/introduction-data-science?courseLang=pt-BR&instance_id=5d9980b0-ba29-4166-bd14-9929eca66bec",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "google-skills-cloud-analytics",
+        category: "Cursos Principais",
+        title: "Google Cloud Data Analytics Certificate",
+        provider: "Google Cloud Skills Boost",
+        description: "Trilha oficial do Google voltada para análise de dados em nuvem.",
+        url: "https://www.skills.google/paths/420",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "notion-aula-if-while-for",
+        category: "Lições / Aulas Práticas",
+        title: "Aula: Estruturas de Repetição (IF - WHILE - FOR)",
+        provider: "Notion",
+        description: "Anotações e exemplos práticos sobre estruturas condicionais.",
+        url: "https://dramatic-yarn-f93.notion.site/aula-3-if-while-for-2a7025a4a6e48007a813c7bfec216ce2",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "fiap-programa-eu-capacito",
+        category: "Bolsas & Cursos Úteis",
+        title: "Cursos Gratuitos FIAP (Programa Eu Capacito)",
+        provider: "FIAP / Eu Capacito",
+        description: "Cursos com emissão de certificado gratuito em tecnologia.",
+        url: "https://on.fiap.com.br/local/programaeucapacito/",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "santander-coursera-bolsa",
+        category: "Bolsas & Cursos Úteis",
+        title: "Programa de Bolsa 1 ano Coursera",
+        provider: "Santander Open Academy",
+        description: "Inscrição para o programa de bolsas para o Coursera.",
+        url: "https://app.santanderopenacademy.com/pt-BR/program/skills-for-work-2026",
+        status: "pending",
+        notes: ""
+      }
+    ];
+
+    const motivationalQuotes = [
+      "Por mais difícil que possa parecer, você conseguiu hoje!",
+      "Você evoluiu! Hoje está 1% melhor que ontem. De 1% em 1% você chega lá!",
+      "Sua competição é contra você mesmo. Parabéns, você venceu hoje!",
+      "O conhecimento acumulado hoje é o seu diferencial de amanhã!",
+      "Excelente foco! Cada pequeno passo te aproxima da sua meta em dados."
+    ];
+
+    let currentFilter = 'all';
+    let agendaLog = {}; // Guarda registros de check-in diário: { 'YYYY-MM-DD': ['courseId1', 'courseId2'] }
+
+    // ==========================================================================
+    // LOCAL STORAGE MANAGEMENT
+    // ==========================================================================
+    function getStoredData() {
+      const storedCourses = localStorage.getItem('data_analytics_courses_v7');
+      const storedAgenda = localStorage.getItem('data_analytics_agenda_v7');
+      
+      let courses = initialCourses;
+      if (storedCourses) {
+        const parsed = JSON.parse(storedCourses);
+        courses = initialCourses.map(course => {
+          const match = parsed.find(p => p.id === course.id);
+          return match ? { ...course, status: match.status || course.status, notes: match.notes || '' } : course;
+        });
+      }
+
+      if (storedAgenda) {
+        agendaLog = JSON.parse(storedAgenda);
+      }
+
+      return courses;
+    }
+
+    let courses = getStoredData();
+
+    function save() {
+      localStorage.setItem('data_analytics_courses_v7', JSON.stringify(courses));
+      localStorage.setItem('data_analytics_agenda_v7', JSON.stringify(agendaLog));
+      calculateStreak();
+      render();
+      renderAgenda();
+    }
+
+    // ==========================================================================
+    // MOTIVATIONAL TOAST
+    // ==========================================================================
+    function triggerMotivationalToast() {
+      const randomQuote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
+      const toastContainer = document.getElementById('toast-container');
+      
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = "✨ " + randomQuote;
+      
+      toastContainer.appendChild(toast);
+      setTimeout(() => toast.remove(), 5000);
+    }
+
+    // ==========================================================================
+    // COURSE STATUS & NOTES
+    // ==========================================================================
+    function cycleCourseStatus(id) {
+      courses = courses.map(c => {
+        if (c.id === id) {
+          let nextStatus = 'pending';
+          if (c.status === 'pending') nextStatus = 'in_progress';
+          else if (c.status === 'in_progress') nextStatus = 'completed';
+          else if (c.status === 'completed') nextStatus = 'pending';
+
+          if (nextStatus === 'completed' || nextStatus === 'in_progress') {
+            triggerMotivationalToast();
+          }
+          return { ...c, status: nextStatus };
+        }
+        return c;
+      });
+      save();
+    }
+
+    function updateNotes(id, text) {
+      courses = courses.map(c => c.id === id ? { ...c, notes: text } : c);
+      localStorage.setItem('data_analytics_courses_v7', JSON.stringify(courses));
+    }
+
+    function toggleNotesVisibility(id) {
+      const el = document.getElementById(`notes-container-${id}`);
+      if (el) el.classList.toggle('open');
+    }
+
+    // ==========================================================================
+    // AGENDA LOGIC
+    // ==========================================================================
+    const agendaDatePicker = document.getElementById('agenda-date');
+    
+    // Set default date to today or 2026-07-26
+    const todayStr = new Date().toISOString().split('T')[0];
+    agendaDatePicker.value = (todayStr >= "2026-07-26" && todayStr <= "2026-10-31") ? todayStr : "2026-07-26";
+
+    agendaDatePicker.addEventListener('change', renderAgenda);
+
+    function toggleAgendaCheck(courseId) {
+      const selectedDate = agendaDatePicker.value;
+      if (!agendaLog[selectedDate]) agendaLog[selectedDate] = [];
+
+      const index = agendaLog[selectedDate].indexOf(courseId);
+      if (index > -1) {
+        agendaLog[selectedDate].splice(index, 1);
+      } else {
+        agendaLog[selectedDate].push(courseId);
+        triggerMotivationalToast();
+      }
+
+      save();
+    }
+
+    function renderAgenda() {
+      const selectedDate = agendaDatePicker.value;
+      const container = document.getElementById('agenda-items-container');
+      container.innerHTML = '';
+
+      // Cursos em andamento
+      const activeCourses = courses.filter(c => c.status === 'in_progress');
+
+      if (activeCourses.length === 0) {
+        container.innerHTML = `<p style="color: var(--text-muted); font-size: 0.85rem; text-align: center; margin-top: 1rem;">Nenhum item "Em andamento" no momento. Marque um item na lista para acompanhar aqui!</p>`;
+        return;
+      }
+
+      const completedToday = agendaLog[selectedDate] || [];
+
+      activeCourses.forEach(course => {
+        const isChecked = completedToday.includes(course.id);
+        const item = document.createElement('div');
+        item.className = `agenda-item ${isChecked ? 'checked' : ''}`;
+        
+        // Se for o Canvas, exibe a observação contextual diretamente dentro do card dele
+        const canvasNoteHtml = course.id === 'generation-canvas' ? `
+          <div class="agenda-canvas-note">
+            ⚠️ Confirme se já deu check no Canvas nas aulas síncronas e realizou todas as atividades instruídas pelos professores antes de marcar.
+          </div>
+        ` : '';
+
+        item.innerHTML = `
+          <div class="agenda-item-header">
+            <span class="agenda-title">${course.title}</span>
+            <label class="agenda-checkbox-label">
+              <input type="checkbox" class="agenda-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleAgendaCheck('${course.id}')">
+              <span>${isChecked ? 'Concluído' : 'Check-in'}</span>
+            </label>
+          </div>
+          ${canvasNoteHtml}
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // ==========================================================================
+    // STREAK CALCULATOR
+    // ==========================================================================
+    function calculateStreak() {
+      const dates = Object.keys(agendaLog).filter(d => agendaLog[d] && agendaLog[d].length > 0).sort();
+      let streak = dates.length > 0 ? dates.length : 0;
+      document.getElementById('streak-count').textContent = streak;
+    }
+
+    // ==========================================================================
+    // POMODORO TIMER
+    // ==========================================================================
+    let pomoTime = 25 * 60;
+    let pomoTimerId = null;
+    let isWorkSession = true;
+
+    function updatePomoDisplay() {
+      const min = Math.floor(pomoTime / 60).toString().padStart(2, '0');
+      const sec = (pomoTime % 60).toString().padStart(2, '0');
+      document.getElementById('pomo-timer').textContent = `${min}:${sec}`;
+    }
+
+    function startPomodoro() {
+      if (pomoTimerId) return;
+      pomoTimerId = setInterval(() => {
+        if (pomoTime > 0) {
+          pomoTime--;
+          updatePomoDisplay();
+        } else {
+          clearInterval(pomoTimerId);
+          pomoTimerId = null;
+          isWorkSession = !isWorkSession;
+          pomoTime = isWorkSession ? 25 * 60 : 5 * 60;
+          document.getElementById('pomo-mode-label').textContent = isWorkSession ? "Foco (25m)" : "Pausa (5m)";
+          triggerMotivationalToast();
+          alert(isWorkSession ? "Hora de focar!" : "Hora do descanso de 5 minutos!");
+          updatePomoDisplay();
+        }
+      }, 1000);
+    }
+
+    function pausePomodoro() {
+      clearInterval(pomoTimerId);
+      pomoTimerId = null;
+    }
+
+    function resetPomodoro() {
+      pausePomodoro();
+      isWorkSession = true;
+      pomoTime = 25 * 60;
+      document.getElementById('pomo-mode-label').textContent = "Foco (25m)";
+      updatePomoDisplay();
+    }
+
+    // ==========================================================================
+    // MAIN RENDER & FILTERS
+    // ==========================================================================
+    function setFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.toolbar .btn-group .btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`filter-${filter}`).classList.add('active');
+      render();
+    }
+
+    function exportProgress() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ courses, agendaLog }));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "meu_progresso_completo.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importProgress(event) {
+      const fileReader = new FileReader();
+      fileReader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported.courses) courses = imported.courses;
+          if (imported.agendaLog) agendaLog = imported.agendaLog;
+          save();
+          alert("Progresso importado com sucesso!");
+        } catch (err) {
+          alert("Erro ao importar dados.");
+        }
+      };
+      fileReader.readAsText(event.target.files[0]);
+    }
+
+    function addNewCourse() {
+      const title = prompt("Nome do curso ou aula:");
+      const url = prompt("Link (URL):");
+      if (title && url) {
+        courses.push({
+          id: "custom_" + Date.now(),
+          category: "Adicionados por Você",
+          title: title,
+          provider: "Link Personalizado",
+          description: "Adicionado manualmente",
+          url: url,
+          status: "pending",
+          notes: ""
+        });
+        save();
+      }
+    }
+
+    function render() {
+      const main = document.getElementById('main-content');
+      const searchQuery = document.getElementById('search-input').value.toLowerCase();
+      main.innerHTML = '';
+
+      const total = courses.length;
+      const completedCount = courses.filter(c => c.status === 'completed').length;
+      const inProgressCount = courses.filter(c => c.status === 'in_progress').length;
+      const pct = total ? Math.round((completedCount / total) * 100) : 0;
+
+      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('progress-text').textContent = 
+        `${completedCount} concluídos (${pct}%) • ${inProgressCount} em andamento de ${total} totais`;
+
+      // Filter & Search Logic
+      const filtered = courses.filter(c => {
+        const matchesFilter = (currentFilter === 'all') || (c.status === currentFilter);
+        const matchesSearch = c.title.toLowerCase().includes(searchQuery) || c.provider.toLowerCase().includes(searchQuery);
+        return matchesFilter && matchesSearch;
+      });
+
+      const categories = [...new Set(courses.map(c => c.category))];
+
+      categories.forEach(cat => {
+        const catCourses = filtered.filter(c => c.category === cat);
+        if (catCourses.length === 0) return;
+
+        const catHeader = document.createElement('h2');
+        catHeader.className = 'category-title';
+        catHeader.textContent = cat;
+        main.appendChild(catHeader);
+
+        const list = document.createElement('div');
+        list.className = 'course-list';
+
+        catCourses.forEach(course => {
+          const card = document.createElement('div');
+          card.className = `course-card ${course.status}`;
+
+          const altLinkHtml = course.altUrl ? `
+            <a href="${course.altUrl}" target="_blank" class="btn-link alt-link">${course.altUrlLabel || 'Link Alternativo'} ↗</a>
+          ` : '';
+
+          card.innerHTML = `
+            <div class="course-card-main">
+              <div class="course-info">
+                <button class="status-btn ${course.status}" onclick="cycleCourseStatus('${course.id}')" title="Mudar estado"></button>
+                <div>
+                  <h3>
+                    <span class="course-title-text">${course.title}</span>
+                    <span class="badge ${course.status}">${course.status === 'completed' ? 'Concluído' : course.status === 'in_progress' ? 'Em andamento' : 'Pendente'}</span>
+                  </h3>
+                  <p><strong>${course.provider}</strong> ${course.description ? '— ' + course.description : ''}</p>
+                  <button class="notes-toggle" onclick="toggleNotesVisibility('${course.id}')">📝 Anotações Rápidas</button>
+                </div>
+              </div>
+              <div class="links-group">
+                <a href="${course.url}" target="_blank" class="btn-link">Acessar ↗</a>
+                ${altLinkHtml}
+              </div>
+            </div>
+
+            <div class="notes-container" id="notes-container-${course.id}">
+              <textarea 
+                class="notes-textarea" 
+                placeholder="Escreva aqui suas anotações, comandos ou dúvidas sobre este item..." 
+                onchange="updateNotes('${course.id}', this.value)">${course.notes || ''}</textarea>
+            </div>
+          `;
+          list.appendChild(card);
+        });
+
+        main.appendChild(list);
+      });
+    }
+
+    // Initial Load
+    calculateStreak();
+    render();
+    renderAgenda();
+  </script>
+</body>
+</html>
