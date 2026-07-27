@@ -2,6 +2,7 @@
 
 Bem-vindo à nossa plataforma unificada de acompanhamento de estudos! Este projeto foi desenvolvido para organizar, centralizar e motivar nossa turma durante a jornada no universo de Análise de Dados, reunindo cursos complementares, lições práticas, bolsas e o acompanhamento diário do **Canvas (Generation Brazil)**.
 
+Acesse o site do Planner aqui: (https://github.com/Maria-apsguiar/Data-Planner/settings/pages)
 ---
 
 ## 🚀 Como Acessar e Usar
