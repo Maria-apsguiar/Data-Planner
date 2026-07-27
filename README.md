@@ -2,7 +2,7 @@
 
 Bem-vindo à nossa plataforma unificada de acompanhamento de estudos! Este projeto foi desenvolvido para organizar, centralizar e motivar nossa turma durante a jornada no universo de Análise de Dados, reunindo cursos complementares, lições práticas, bolsas e o acompanhamento diário do **Canvas (Generation Brazil)**.
 
-Acesse o site do Planner aqui: (https://maria-apsguiar.github.io/Data-Planner/)
+Acesse o site do Planner aqui: [https://maria-apsguiar.github.io/Data-Planner/](https://maria-apsguiar.github.io/Data-Planner/)
 ---
 
 ## 🚀 Como Acessar e Usar
@@ -40,25 +40,23 @@ Projetada para o período de **26/07/2026 a 31/10/2026**:
 
 ---
 
-### 4. ⏱️ Cronômetro Pomodoro (Modo Foco) & 📝 Anotações
-* **Timer Foco (25 min / 5 min):** Utilize o cronômetro no topo da tela para estudar em blocos de foco sem precisar sair da aba.
+### 4. ⏱️ Registro de Horas de Estudo & 📝 Anotações
+* **Contador de Tempo Contínuo (Play / Pause / Stop):** Dê **Play** quando começar a estudar e **Pause** ou **Finalizar Dia** quando parar. O tempo fica acumulado no dia, exibe o relógio rodando direto **no título da aba do navegador** (para você acompanhar enquanto assiste às aulas em outra aba) e soma sessões feitas no mesmo dia.
 * **Anotações Rápidas:** Clique em `📝 Anotações Rápidas` em qualquer card para registrar comandos, resumos, insights ou dúvidas. Suas anotações ficam salvas automaticamente.
 
 ---
 
-## 💾 Entendendo o Importar/Exportar Progresso (Muito Importante!)
+## 💾 Privacidade, Salvamento Automático e Backup
 
-Os seus dados (checks, agenda e anotações) ficam salvos **exclusivamente no seu navegador**, respeitando a privacidade de cada colega.
+O **Data Planner** foi planejado para garantir total privacidade e praticidade:
 
-### 📥 Exportar Progresso
-* **O que faz:** Cria um arquivo leve de backup (`.json`) com todo o seu progresso atual.
-* **Quando usar:** 
-  * Antes de trocar de computador ou navegador.
-  * Por segurança, para não perder seu histórico caso decida limpar o cache/histórico do navegador.
+* **Salvo Automaticamente (localStorage):** Não é preciso criar contas ou fazer login. Todo o seu progresso (cursos em andamento, anotações, checks na agenda e horas estudadas) é salvo automaticamente no seu próprio navegador. 
+* **Atualizações Sem Perdas:** Quando novas aulas ou cursos são adicionados ao projeto principal no GitHub, você recebe as melhorias ao acessar o site, mas o seu histórico e progresso pessoal continuam intactos.
 
-### 📤 Importar Progresso
-* **O que faz:** Lê seu arquivo de backup `.json` e restaura todos os seus checks, anotações e dias marcados na agenda.
-* **Como usar:** Clique em `📤 Importar`, selecione o arquivo de backup e pronto! Toda a sua evolução é restaurada instantaneamente.
+### 📥 📤 Importar e Exportar Progresso (Backup Manual)
+Caso precise trocar de computador, mudar de navegador (ex: do Chrome para o Safari) ou queira fazer uma cópia de segurança por precaução:
+* **Exportar:** Clique em `📥 Exportar` para baixar um arquivo leve de backup (`.json`) com todo o seu histórico atual.
+* **Importar:** No novo dispositivo ou navegador, clique em `📤 Importar`, selecione o seu arquivo `.json` e toda a sua evolução será restaurada instantaneamente.
 
 ---
 
