@@ -443,7 +443,6 @@
     let currentFilter = 'all';
     let agendaLog = {};
 
-    // Helper de Data Local Próprio (Garante Fuso Horário Local exato YYYY-MM-DD)
     function getLocalDateString(d = new Date()) {
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -484,9 +483,6 @@
       renderAgenda();
     }
 
-    // ==========================================================================
-    // MOTIVATIONAL TOAST
-    // ==========================================================================
     function triggerMotivationalToast() {
       const randomQuote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
       const toastContainer = document.getElementById('toast-container');
@@ -499,9 +495,6 @@
       setTimeout(() => toast.remove(), 5000);
     }
 
-    // ==========================================================================
-    // COURSE STATUS & NOTES
-    // ==========================================================================
     function cycleCourseStatus(id) {
       courses = courses.map(c => {
         if (c.id === id) {
@@ -531,7 +524,7 @@
     }
 
     // ==========================================================================
-    // AGENDA LOGIC (COM DATA LOCAL FIXA)
+    // AGENDA LOGIC
     // ==========================================================================
     const agendaDatePicker = document.getElementById('agenda-date');
     const todayLocal = getLocalDateString();
@@ -593,9 +586,6 @@
       });
     }
 
-    // ==========================================================================
-    // STREAK CALCULATOR
-    // ==========================================================================
     function calculateStreak() {
       const dates = Object.keys(agendaLog).filter(d => agendaLog[d] && agendaLog[d].length > 0).sort();
       let streak = dates.length > 0 ? dates.length : 0;
@@ -603,42 +593,22 @@
     }
 
     // ==========================================================================
-    // CONTADOR DE TEMPO PERSISTENTE & PRECISO EM SEGUNDO PLANO
+    // CONTADOR DE TEMPO PERSISTENTE & CORRIGIDO (SOMA DE SESSÕES DO DIA)
     // ==========================================================================
     let timerInterval = null;
-    let startTime = 0;
-    let accumulatedSeconds = 0;
+    let sessionStartTimestamp = null;
+    let savedDaySeconds = 0;
     const originalTitle = "Trilha de Estudos & Planner: Análise de Dados";
 
-    function loadSavedTimer() {
-      const today = getLocalDateString();
-      const savedTimerData = localStorage.getItem('data_planner_timer');
-      
-      if (savedTimerData) {
-        const parsed = JSON.parse(savedTimerData);
-        if (parsed.date === today) {
-          accumulatedSeconds = parsed.accumulatedSeconds || 0;
-          if (parsed.isRunning && parsed.startTime) {
-            startTime = parsed.startTime;
-            startTimer(true); // Retoma contagem automática se estava rodando
-            return;
-          }
-        } else {
-          // Novo dia: reseta o acumulado anterior
-          localStorage.removeItem('data_planner_timer');
-        }
-      }
-      updateTimerDisplay();
+    function getStorageKey() {
+      return `data_planner_timer_${getLocalDateString()}`;
     }
 
-    function saveTimerState(isRunning) {
-      const today = getLocalDateString();
-      localStorage.setItem('data_planner_timer', JSON.stringify({
-        date: today,
-        accumulatedSeconds: accumulatedSeconds,
-        isRunning: isRunning,
-        startTime: startTime
-      }));
+    function loadSavedTimer() {
+      const key = getStorageKey();
+      const savedSecs = localStorage.getItem(key);
+      savedDaySeconds = savedSecs ? parseInt(savedSecs, 10) : 0;
+      updateTimerDisplay();
     }
 
     function formatTime(totalSeconds) {
@@ -649,11 +619,11 @@
     }
 
     function getCurrentTotalSeconds() {
-      if (timerInterval !== null && startTime > 0) {
-        const currentSessionSecs = Math.floor((Date.now() - startTime) / 1000);
-        return accumulatedSeconds + currentSessionSecs;
+      if (sessionStartTimestamp !== null) {
+        const currentSessionSecs = Math.floor((Date.now() - sessionStartTimestamp) / 1000);
+        return savedDaySeconds + currentSessionSecs;
       }
-      return accumulatedSeconds;
+      return savedDaySeconds;
     }
 
     function updateTimerDisplay() {
@@ -670,19 +640,15 @@
       }
     }
 
-    function startTimer(isResuming = false) {
-      if (timerInterval !== null && !isResuming) return;
+    function startTimer() {
+      if (timerInterval !== null) return;
       document.getElementById('summary-msg').textContent = "";
       
-      if (!isResuming) {
-        startTime = Date.now();
-      }
-
-      saveTimerState(true);
+      sessionStartTimestamp = Date.now();
 
       timerInterval = setInterval(() => {
         updateTimerDisplay();
-      }, 500); // Atualiza mais rápido no visor
+      }, 500);
       
       updateTimerDisplay();
     }
@@ -691,32 +657,34 @@
       if (timerInterval !== null) {
         clearInterval(timerInterval);
         timerInterval = null;
-        accumulatedSeconds = getCurrentTotalSeconds();
-        startTime = 0;
-        saveTimerState(false);
+        
+        savedDaySeconds = getCurrentTotalSeconds();
+        sessionStartTimestamp = null;
+        
+        localStorage.setItem(getStorageKey(), savedDaySeconds.toString());
         updateTimerDisplay();
       }
     }
 
     function stopTimer() {
       const totalSecs = getCurrentTotalSeconds();
+      
       if (totalSecs > 0) {
-        const totalFormatted = formatTime(totalSecs);
+        savedDaySeconds = totalSecs;
+        localStorage.setItem(getStorageKey(), savedDaySeconds.toString());
+        const totalFormatted = formatTime(savedDaySeconds);
         document.getElementById('summary-msg').textContent = `🎉 Parabéns! Você acumulou ${totalFormatted} de estudos hoje!`;
         triggerMotivationalToast();
       }
+      
       if (timerInterval !== null) {
         clearInterval(timerInterval);
         timerInterval = null;
       }
-      accumulatedSeconds = 0;
-      startTime = 0;
-      saveTimerState(false);
+      sessionStartTimestamp = null;
       updateTimerDisplay();
-      document.title = originalTitle;
     }
 
-    // Garante sincronia perfeita quando o usuário volta para a aba
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden && timerInterval !== null) {
         updateTimerDisplay();
@@ -856,7 +824,7 @@
     calculateStreak();
     render();
     renderAgenda();
-    loadSavedTimer(); // Carrega e restaura o relógio salvo do dia
+    loadSavedTimer();
   </script>
 </body>
 </html>
