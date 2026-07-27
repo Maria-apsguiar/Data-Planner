@@ -69,7 +69,7 @@
     .progress-bar-bg { height: 10px; background: var(--bg-primary); border-radius: 999px; overflow: hidden; }
     .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--progress-color), var(--success)); transition: width 0.4s ease; }
 
-    /* WIDGETS SECTION (AGENDA + POMODORO) */
+    /* WIDGETS SECTION (AGENDA + TIMER) */
     .widgets-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;
     }
@@ -85,14 +85,14 @@
       display: flex; align-items: center; justify-content: space-between;
     }
 
-    /* POMODORO STYLES */
+    /* CONTADOR DE TEMPO STYLES */
     .pomo-display {
-      font-size: 2.5rem; font-weight: 800; text-align: center;
-      font-mono: monospace; color: var(--accent); margin: 0.5rem 0;
+      font-size: 2.2rem; font-weight: 800; text-align: center;
+      font-family: monospace; color: var(--accent); margin: 0.5rem 0;
     }
-    .pomo-controls { display: flex; justify-content: center; gap: 0.5rem; }
+    .pomo-controls { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
 
-    /* AGENDA STYLES (MELHORADOS & MAIORES) */
+    /* AGENDA STYLES */
     .agenda-date-picker {
       background: var(--bg-primary); border: 1px solid var(--border);
       color: var(--text-main); padding: 0.3rem 0.6rem; border-radius: 6px;
@@ -270,7 +270,7 @@
       </div>
     </header>
 
-    <!-- WIDGETS: AGENDA + POMODORO -->
+    <!-- WIDGETS: AGENDA + CONTADOR DE TEMPO -->
     <div class="widgets-grid">
       <!-- WIDGET AGENDA -->
       <div class="widget-card">
@@ -284,18 +284,19 @@
         </div>
       </div>
 
-      <!-- WIDGET POMODORO -->
+      <!-- WIDGET CONTADOR DE TEMPO -->
       <div class="widget-card">
         <div class="widget-title">
-          <span>⏱️ Modo Foco (Pomodoro)</span>
-          <span id="pomo-mode-label" style="font-size: 0.8rem; color: var(--text-muted);">Foco (25m)</span>
+          <span>⏱️ Registro de Horas de Estudo</span>
+          <span id="pomo-mode-label" style="font-size: 0.8rem; color: var(--text-muted);">Tempo Ativo</span>
         </div>
-        <div class="pomo-display" id="pomo-timer">25:00</div>
+        <div class="pomo-display" id="pomo-timer">00:00:00</div>
         <div class="pomo-controls">
-          <button class="btn" onclick="startPomodoro()">Iniciar</button>
-          <button class="btn btn-outline" onclick="pausePomodoro()">Pausar</button>
-          <button class="btn btn-outline" onclick="resetPomodoro()">Resetar</button>
+          <button class="btn" onclick="startTimer()">▶ Play</button>
+          <button class="btn btn-outline" onclick="pauseTimer()">⏸ Pause</button>
+          <button class="btn btn-outline" onclick="stopTimer()">⏹ Finalizar Dia</button>
         </div>
+        <p id="summary-msg" style="margin-top: 10px; font-weight: 600; font-size: 0.85rem; color: var(--success); text-align: center;"></p>
       </div>
     </div>
 
@@ -403,10 +404,10 @@
       {
         id: "notion-aula-if-while-for",
         category: "Lições / Aulas Práticas",
-        title: "Aula: Estruturas de Repetição (IF - WHILE - FOR)",
-        provider: "Notion",
-        description: "Anotações e exemplos práticos sobre estruturas condicionais.",
-        url: "https://dramatic-yarn-f93.notion.site/aula-3-if-while-for-2a7025a4a6e48007a813c7bfec216ce2",
+        title: "Notion",
+        provider: "Anotações e Materiais",
+        description: "Caderno completo no Notion com conteúdos de Ciência e Análise de Dados.",
+        url: "https://dramatic-yarn-f93.notion.site/Analise-ciencias-de-dados-2a0025a4a6e480a39ed7e74f71261813",
         status: "pending",
         notes: ""
       },
@@ -599,48 +600,61 @@
     }
 
     // ==========================================================================
-    // POMODORO TIMER
+    // CONTADOR DE TEMPO PROGRESSIVO (HORAS DE ESTUDO)
     // ==========================================================================
-    let pomoTime = 25 * 60;
-    let pomoTimerId = null;
-    let isWorkSession = true;
+    let timerInterval = null;
+    let secondsElapsed = 0;
+    const originalTitle = "Trilha de Estudos & Planner: Análise de Dados";
 
-    function updatePomoDisplay() {
-      const min = Math.floor(pomoTime / 60).toString().padStart(2, '0');
-      const sec = (pomoTime % 60).toString().padStart(2, '0');
-      document.getElementById('pomo-timer').textContent = `${min}:${sec}`;
+    function formatTime(totalSeconds) {
+      const hrs = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+      const mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+      const secs = (totalSeconds % 60).toString().padStart(2, '0');
+      return `${hrs}:${mins}:${secs}`;
     }
 
-    function startPomodoro() {
-      if (pomoTimerId) return;
-      pomoTimerId = setInterval(() => {
-        if (pomoTime > 0) {
-          pomoTime--;
-          updatePomoDisplay();
-        } else {
-          clearInterval(pomoTimerId);
-          pomoTimerId = null;
-          isWorkSession = !isWorkSession;
-          pomoTime = isWorkSession ? 25 * 60 : 5 * 60;
-          document.getElementById('pomo-mode-label').textContent = isWorkSession ? "Foco (25m)" : "Pausa (5m)";
-          triggerMotivationalToast();
-          alert(isWorkSession ? "Hora de focar!" : "Hora do descanso de 5 minutos!");
-          updatePomoDisplay();
-        }
+    function updateTimerDisplay() {
+      const formatted = formatTime(secondsElapsed);
+      document.getElementById('pomo-timer').textContent = formatted;
+      
+      if (timerInterval !== null) {
+        document.title = `⏱️ ${formatted} - Planner`;
+      } else if (secondsElapsed > 0) {
+        document.title = `⏸️ ${formatted} (Pausado)`;
+      } else {
+        document.title = originalTitle;
+      }
+    }
+
+    function startTimer() {
+      if (timerInterval !== null) return;
+      document.getElementById('summary-msg').textContent = "";
+      
+      timerInterval = setInterval(() => {
+        secondsElapsed++;
+        updateTimerDisplay();
       }, 1000);
+      updateTimerDisplay();
     }
 
-    function pausePomodoro() {
-      clearInterval(pomoTimerId);
-      pomoTimerId = null;
+    function pauseTimer() {
+      if (timerInterval !== null) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        updateTimerDisplay();
+      }
     }
 
-    function resetPomodoro() {
-      pausePomodoro();
-      isWorkSession = true;
-      pomoTime = 25 * 60;
-      document.getElementById('pomo-mode-label').textContent = "Foco (25m)";
-      updatePomoDisplay();
+    function stopTimer() {
+      if (secondsElapsed > 0) {
+        const totalFormatted = formatTime(secondsElapsed);
+        document.getElementById('summary-msg').textContent = `🎉 Parabéns! Você acumulou ${totalFormatted} de estudos hoje!`;
+        triggerMotivationalToast();
+      }
+      pauseTimer();
+      secondsElapsed = 0;
+      updateTimerDisplay();
+      document.title = originalTitle;
     }
 
     // ==========================================================================
