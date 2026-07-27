@@ -40,8 +40,12 @@ Projetada para o período de **26/07/2026 a 31/10/2026**:
 
 ---
 
-### 4. ⏱️ Registro de Horas de Estudo & 📝 Anotações
-* **Contador de Tempo Contínuo (Play / Pause / Stop):** Dê **Play** quando começar a estudar e **Pause** ou **Finalizar Dia** quando parar. O tempo fica acumulado no dia, exibe o relógio rodando direto **no título da aba do navegador** (para você acompanhar enquanto assiste às aulas em outra aba) e soma sessões feitas no mesmo dia.
+### 4. ⏱️ Registro de Horas & 📊 Histórico Semanal (Últimos 7 Dias)
+* **Contador de Tempo Contínuo (Play / Pause / Stop):** Dê **Play** para iniciar seus estudos e **Pause** ou **Finalizar Dia** quando fizer pausas. O tempo é acumulado ao longo do dia e exibido em tempo real **no título da aba do navegador**, permitindo que você navegue em outras abas de aula sem perder a contagem.
+* **Dashboard dos Últimos 7 Dias:** Logo abaixo do relógio, uma grade visual exibe a sua dedicação ao longo da semana:
+  * 🔥 **Foguinho:** Dias com mais de 1 hora de estudo acumulada.
+  * ✅ **Check Verde:** Dias com sessões de estudo registradas.
+  * ⚪ **Bolinha:** Dias em que não houve registro de estudos.
 * **Anotações Rápidas:** Clique em `📝 Anotações Rápidas` em qualquer card para registrar comandos, resumos, insights ou dúvidas. Suas anotações ficam salvas automaticamente.
 
 ---
@@ -50,9 +54,30 @@ Projetada para o período de **26/07/2026 a 31/10/2026**:
 
 O **Data Planner** foi planejado para garantir total privacidade e praticidade:
 
-* **Salvo Automaticamente (localStorage):** Não é preciso criar contas ou fazer login. Todo o seu progresso (cursos em andamento, anotações, checks na agenda e horas estudadas) é salvo automaticamente no seu próprio navegador. 
+* **Salvo Automaticamente (localStorage):** Não é preciso criar contas ou fazer login. Todo o seu progresso (cursos em andamento, anotações, checks na agenda, histórico semanal e horas estudadas) é salvo automaticamente no seu próprio navegador. 
 * **Atualizações Sem Perdas:** Quando novas aulas ou cursos são adicionados ao projeto principal no GitHub, você recebe as melhorias ao acessar o site, mas o seu histórico e progresso pessoal continuam intactos.
 
+### 📥 📤 Importar e Exportar Progresso (Backup Manual)
+Caso precise trocar de computador, mudar de navegador (ex: do Chrome para o Safari) ou queira fazer uma cópia de segurança por precaução:
+* **Exportar:** Clique em `📥 Exportar` para baixar um arquivo leve de backup (`.json`) com todo o seu histórico atual.
+* **Importar:** No novo dispositivo ou navegador, clique em `📤 Importar`, selecione o seu arquivo `.json` e toda a sua evolução será restaurada instantaneamente.
+
+---
+
+## ➕ Adicionando Conteúdos Próprios
+
+Achou um curso ou artigo legal e quer incluir na sua lista? Clique no botão **`+ Criar Novo`** na barra de ferramentas. Ele ficará salvo na seção *"Adicionados por Você"*.
+
+---
+
+## 💬 Sugestões, Dúvidas e Feedback
+
+Este projeto é feito de aluno para aluno! Se você tiver sugestões de melhoria, encontrar algum link quebrado ou quiser indicar novos cursos para entrar no código principal da turma:
+
+📬 **Contate o criador do arquivo / mantenedor do repositório** diretamente pelo Discord/WhatsApp da turma ou abrindo uma *Issue* aqui no GitHub.
+
+---
+*Bons estudos e vamos pra cima! 🚀*
 ### 📥 📤 Importar e Exportar Progresso (Backup Manual)
 Caso precise trocar de computador, mudar de navegador (ex: do Chrome para o Safari) ou queira fazer uma cópia de segurança por precaução:
 * **Exportar:** Clique em `📥 Exportar` para baixar um arquivo leve de backup (`.json`) com todo o seu histórico atual.
