@@ -69,7 +69,7 @@
     .progress-bar-bg { height: 10px; background: var(--bg-primary); border-radius: 999px; overflow: hidden; }
     .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--progress-color), var(--success)); transition: width 0.4s ease; }
 
-    /* WIDGETS SECTION (AGENDA + TIMER) */
+    /* WIDGETS SECTION (AGENDA + TIMER & HISTÓRICO) */
     .widgets-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;
     }
@@ -91,6 +91,24 @@
       font-family: monospace; color: var(--accent); margin: 0.5rem 0;
     }
     .pomo-controls { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
+
+    /* HISTÓRICO SEMANAL GRID STYLES */
+    .weekly-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.35rem;
+      margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed var(--border);
+    }
+
+    .day-card {
+      background: var(--bg-primary); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.4rem 0.2rem; text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+      transition: var(--transition);
+    }
+    .day-card.today { border-color: var(--accent); background: rgba(99, 102, 241, 0.08); }
+    .day-name { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .day-date { font-size: 0.65rem; color: var(--text-muted); opacity: 0.8; }
+    .day-icon { font-size: 0.9rem; margin: 0.1rem 0; }
+    .day-time { font-size: 0.65rem; font-weight: 600; font-family: monospace; color: var(--text-main); }
 
     /* AGENDA STYLES */
     .agenda-date-picker {
@@ -269,7 +287,7 @@
       </div>
     </header>
 
-    <!-- WIDGETS: AGENDA + CONTADOR DE TEMPO -->
+    <!-- WIDGETS: AGENDA + CONTADOR DE TEMPO & HISTÓRICO -->
     <div class="widgets-grid">
       <!-- WIDGET AGENDA -->
       <div class="widget-card">
@@ -283,7 +301,7 @@
         </div>
       </div>
 
-      <!-- WIDGET CONTADOR DE TEMPO ACUMULATIVO -->
+      <!-- WIDGET CONTADOR DE TEMPO + HISTÓRICO SEMANAL -->
       <div class="widget-card">
         <div class="widget-title">
           <span>⏱️ Registro de Horas de Estudo</span>
@@ -295,7 +313,12 @@
           <button class="btn btn-outline" onclick="pauseTimer()">⏸ Pause</button>
           <button class="btn btn-outline" onclick="stopTimer()">⏹ Finalizar Dia</button>
         </div>
-        <p id="summary-msg" style="margin-top: 10px; font-weight: 600; font-size: 0.85rem; color: var(--success); text-align: center;"></p>
+        <p id="summary-msg" style="margin-top: 6px; font-weight: 600; font-size: 0.8rem; color: var(--success); text-align: center; min-height: 18px;"></p>
+
+        <!-- GRADE DO HISTÓRICO DOS ÚLTIMOS 7 DIAS -->
+        <div class="weekly-grid" id="weekly-grid">
+          <!-- Os 7 cards diários serão gerados via JavaScript -->
+        </div>
       </div>
     </div>
 
@@ -593,15 +616,15 @@
     }
 
     // ==========================================================================
-    // CONTADOR DE TEMPO PERSISTENTE & CORRIGIDO (SOMA DE SESSÕES DO DIA)
+    // CONTADOR DE TEMPO PERSISTENTE & HISTÓRICO SEMANAL
     // ==========================================================================
     let timerInterval = null;
     let sessionStartTimestamp = null;
     let savedDaySeconds = 0;
     const originalTitle = "Trilha de Estudos & Planner: Análise de Dados";
 
-    function getStorageKey() {
-      return `data_planner_timer_${getLocalDateString()}`;
+    function getStorageKey(dateStr = getLocalDateString()) {
+      return `data_planner_timer_${dateStr}`;
     }
 
     function loadSavedTimer() {
@@ -616,6 +639,14 @@
       const mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
       const secs = (totalSeconds % 60).toString().padStart(2, '0');
       return `${hrs}:${mins}:${secs}`;
+    }
+
+    function formatShortTime(totalSeconds) {
+      if (!totalSeconds || totalSeconds <= 0) return "00:00h";
+      const hrs = Math.floor(totalSeconds / 3600);
+      const mins = Math.floor((totalSeconds % 3600) / 60);
+      if (hrs > 0) return `${hrs}h${mins > 0 ? mins + 'm' : ''}`;
+      return `${mins}m`;
     }
 
     function getCurrentTotalSeconds() {
@@ -638,6 +669,8 @@
       } else {
         document.title = originalTitle;
       }
+
+      renderWeeklyGrid();
     }
 
     function startTimer() {
@@ -683,6 +716,62 @@
       }
       sessionStartTimestamp = null;
       updateTimerDisplay();
+    }
+
+    // ==========================================================================
+    // RENDERIZADOR DO GRID DOS ÚLTIMOS 7 DIAS
+    // ==========================================================================
+    function renderWeeklyGrid() {
+      const gridContainer = document.getElementById('weekly-grid');
+      if (!gridContainer) return;
+
+      gridContainer.innerHTML = '';
+      const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+      const todayDate = new Date();
+
+      // Monta os últimos 7 dias (do 6º dia atrás até hoje)
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(todayDate.getDate() - i);
+
+        const dateStr = getLocalDateString(d);
+        const dayLabel = dayNames[d.getDay()];
+        const dayNum = String(d.getDate()).padStart(2, '0');
+        const isToday = (i === 0);
+
+        // Se for hoje, pega do acumulado ao vivo. Se for dia anterior, lê do localStorage.
+        let secs = 0;
+        if (isToday) {
+          secs = getCurrentTotalSeconds();
+        } else {
+          const storedSecs = localStorage.getItem(getStorageKey(dateStr));
+          secs = storedSecs ? parseInt(storedSecs, 10) : 0;
+        }
+
+        // Define Ícone com base nas regras:
+        // 🔥 = mais de 1 hora de estudo
+        // ✅ = estudou no dia (até 1 hora)
+        // ⚪ = não estudou (00:00h)
+        let icon = "⚪";
+        if (secs >= 3600) {
+          icon = "🔥";
+        } else if (secs > 0) {
+          icon = "✅";
+        }
+
+        const card = document.createElement('div');
+        card.className = `day-card ${isToday ? 'today' : ''}`;
+        card.title = `${dateStr} - Total: ${formatTime(secs)}`;
+
+        card.innerHTML = `
+          <span class="day-name">${isToday ? 'Hoje' : dayLabel}</span>
+          <span class="day-date">${dayNum}</span>
+          <span class="day-icon">${icon}</span>
+          <span class="day-time">${formatShortTime(secs)}</span>
+        `;
+
+        gridContainer.appendChild(card);
+      }
     }
 
     document.addEventListener('visibilitychange', () => {
