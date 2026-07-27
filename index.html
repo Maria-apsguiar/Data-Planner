@@ -117,7 +117,6 @@
 
     .agenda-title { font-weight: 600; font-size: 0.92rem; }
 
-    /* Checkbox de Check-in Maior e Estilizado */
     .agenda-checkbox-label {
       display: flex; align-items: center; gap: 0.5rem; cursor: pointer;
       font-weight: 600; font-size: 0.85rem; color: var(--accent);
@@ -284,11 +283,11 @@
         </div>
       </div>
 
-      <!-- WIDGET CONTADOR DE TEMPO -->
+      <!-- WIDGET CONTADOR DE TEMPO ACUMULATIVO -->
       <div class="widget-card">
         <div class="widget-title">
           <span>⏱️ Registro de Horas de Estudo</span>
-          <span id="pomo-mode-label" style="font-size: 0.8rem; color: var(--text-muted);">Tempo Ativo</span>
+          <span id="pomo-mode-label" style="font-size: 0.8rem; color: var(--text-muted);">Acumulado Hoje</span>
         </div>
         <div class="pomo-display" id="pomo-timer">00:00:00</div>
         <div class="pomo-controls">
@@ -442,7 +441,15 @@
     ];
 
     let currentFilter = 'all';
-    let agendaLog = {}; // Guarda registros de check-in diário: { 'YYYY-MM-DD': ['courseId1', 'courseId2'] }
+    let agendaLog = {};
+
+    // Helper de Data Local Próprio (Garante Fuso Horário Local exato YYYY-MM-DD)
+    function getLocalDateString(d = new Date()) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
 
     // ==========================================================================
     // LOCAL STORAGE MANAGEMENT
@@ -524,14 +531,12 @@
     }
 
     // ==========================================================================
-    // AGENDA LOGIC
+    // AGENDA LOGIC (COM DATA LOCAL FIXA)
     // ==========================================================================
     const agendaDatePicker = document.getElementById('agenda-date');
+    const todayLocal = getLocalDateString();
     
-    // Set default date to today or 2026-07-26
-    const todayStr = new Date().toISOString().split('T')[0];
-    agendaDatePicker.value = (todayStr >= "2026-07-26" && todayStr <= "2026-10-31") ? todayStr : "2026-07-26";
-
+    agendaDatePicker.value = todayLocal;
     agendaDatePicker.addEventListener('change', renderAgenda);
 
     function toggleAgendaCheck(courseId) {
@@ -554,7 +559,6 @@
       const container = document.getElementById('agenda-items-container');
       container.innerHTML = '';
 
-      // Cursos em andamento
       const activeCourses = courses.filter(c => c.status === 'in_progress');
 
       if (activeCourses.length === 0) {
@@ -569,7 +573,6 @@
         const item = document.createElement('div');
         item.className = `agenda-item ${isChecked ? 'checked' : ''}`;
         
-        // Se for o Canvas, exibe a observação contextual diretamente dentro do card dele
         const canvasNoteHtml = course.id === 'generation-canvas' ? `
           <div class="agenda-canvas-note">
             ⚠️ Confirme se já deu check no Canvas nas aulas síncronas e realizou todas as atividades instruídas pelos professores antes de marcar.
@@ -600,11 +603,43 @@
     }
 
     // ==========================================================================
-    // CONTADOR DE TEMPO PROGRESSIVO (HORAS DE ESTUDO)
+    // CONTADOR DE TEMPO PERSISTENTE & PRECISO EM SEGUNDO PLANO
     // ==========================================================================
     let timerInterval = null;
-    let secondsElapsed = 0;
+    let startTime = 0;
+    let accumulatedSeconds = 0;
     const originalTitle = "Trilha de Estudos & Planner: Análise de Dados";
+
+    function loadSavedTimer() {
+      const today = getLocalDateString();
+      const savedTimerData = localStorage.getItem('data_planner_timer');
+      
+      if (savedTimerData) {
+        const parsed = JSON.parse(savedTimerData);
+        if (parsed.date === today) {
+          accumulatedSeconds = parsed.accumulatedSeconds || 0;
+          if (parsed.isRunning && parsed.startTime) {
+            startTime = parsed.startTime;
+            startTimer(true); // Retoma contagem automática se estava rodando
+            return;
+          }
+        } else {
+          // Novo dia: reseta o acumulado anterior
+          localStorage.removeItem('data_planner_timer');
+        }
+      }
+      updateTimerDisplay();
+    }
+
+    function saveTimerState(isRunning) {
+      const today = getLocalDateString();
+      localStorage.setItem('data_planner_timer', JSON.stringify({
+        date: today,
+        accumulatedSeconds: accumulatedSeconds,
+        isRunning: isRunning,
+        startTime: startTime
+      }));
+    }
 
     function formatTime(totalSeconds) {
       const hrs = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
@@ -613,27 +648,42 @@
       return `${hrs}:${mins}:${secs}`;
     }
 
+    function getCurrentTotalSeconds() {
+      if (timerInterval !== null && startTime > 0) {
+        const currentSessionSecs = Math.floor((Date.now() - startTime) / 1000);
+        return accumulatedSeconds + currentSessionSecs;
+      }
+      return accumulatedSeconds;
+    }
+
     function updateTimerDisplay() {
-      const formatted = formatTime(secondsElapsed);
+      const totalSecs = getCurrentTotalSeconds();
+      const formatted = formatTime(totalSecs);
       document.getElementById('pomo-timer').textContent = formatted;
       
       if (timerInterval !== null) {
         document.title = `⏱️ ${formatted} - Planner`;
-      } else if (secondsElapsed > 0) {
+      } else if (totalSecs > 0) {
         document.title = `⏸️ ${formatted} (Pausado)`;
       } else {
         document.title = originalTitle;
       }
     }
 
-    function startTimer() {
-      if (timerInterval !== null) return;
+    function startTimer(isResuming = false) {
+      if (timerInterval !== null && !isResuming) return;
       document.getElementById('summary-msg').textContent = "";
       
+      if (!isResuming) {
+        startTime = Date.now();
+      }
+
+      saveTimerState(true);
+
       timerInterval = setInterval(() => {
-        secondsElapsed++;
         updateTimerDisplay();
-      }, 1000);
+      }, 500); // Atualiza mais rápido no visor
+      
       updateTimerDisplay();
     }
 
@@ -641,21 +691,37 @@
       if (timerInterval !== null) {
         clearInterval(timerInterval);
         timerInterval = null;
+        accumulatedSeconds = getCurrentTotalSeconds();
+        startTime = 0;
+        saveTimerState(false);
         updateTimerDisplay();
       }
     }
 
     function stopTimer() {
-      if (secondsElapsed > 0) {
-        const totalFormatted = formatTime(secondsElapsed);
+      const totalSecs = getCurrentTotalSeconds();
+      if (totalSecs > 0) {
+        const totalFormatted = formatTime(totalSecs);
         document.getElementById('summary-msg').textContent = `🎉 Parabéns! Você acumulou ${totalFormatted} de estudos hoje!`;
         triggerMotivationalToast();
       }
-      pauseTimer();
-      secondsElapsed = 0;
+      if (timerInterval !== null) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      accumulatedSeconds = 0;
+      startTime = 0;
+      saveTimerState(false);
       updateTimerDisplay();
       document.title = originalTitle;
     }
+
+    // Garante sincronia perfeita quando o usuário volta para a aba
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && timerInterval !== null) {
+        updateTimerDisplay();
+      }
+    });
 
     // ==========================================================================
     // MAIN RENDER & FILTERS
@@ -725,7 +791,6 @@
       document.getElementById('progress-text').textContent = 
         `${completedCount} concluídos (${pct}%) • ${inProgressCount} em andamento de ${total} totais`;
 
-      // Filter & Search Logic
       const filtered = courses.filter(c => {
         const matchesFilter = (currentFilter === 'all') || (c.status === currentFilter);
         const matchesSearch = c.title.toLowerCase().includes(searchQuery) || c.provider.toLowerCase().includes(searchQuery);
@@ -791,6 +856,7 @@
     calculateStreak();
     render();
     renderAgenda();
+    loadSavedTimer(); // Carrega e restaura o relógio salvo do dia
   </script>
 </body>
 </html>
