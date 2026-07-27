@@ -423,6 +423,8 @@
         status: "pending",
         notes: ""
       },
+
+      // LIÇÕES / AULAS PRÁTICAS & FERRAMENTAS ÚTEIS
       {
         id: "notion-aula-if-while-for",
         category: "Lições / Aulas Práticas",
@@ -433,6 +435,58 @@
         status: "pending",
         notes: ""
       },
+      {
+        id: "ide-collab-google",
+        category: "Lições / Aulas Práticas",
+        title: "Google Colab (IDE)",
+        provider: "Ferramenta Útil",
+        description: "Ferramenta para criar, executar e compartilhar códigos Python na nuvem.",
+        url: "https://colab.research.google.com/",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "draw-io-fluxogramas",
+        category: "Lições / Aulas Práticas",
+        title: "Draw.io",
+        provider: "Ferramenta Útil",
+        description: "Ferramenta gratuita para criação de fluxogramas, diagramas de blocos e processos.",
+        url: "https://www.drawio.com/",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "pandas-doc-oficial",
+        category: "Lições / Aulas Práticas",
+        title: "Documentação Oficial - Biblioteca Pandas",
+        provider: "Documentação",
+        description: "Guia e referência completa sobre manipulação de dados com Pandas.",
+        url: "https://pandas.pydata.org/docs/",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "w3schools-pandas-tutorial",
+        category: "Lições / Aulas Práticas",
+        title: "Tutorial Pandas - W3Schools",
+        provider: "W3Schools",
+        description: "Guia prático e interativo para aprender manipulação e análise de dados com Pandas.",
+        url: "https://www.w3schools.com/python/pandas/default.asp",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "w3schools-python-tutorial",
+        category: "Lições / Aulas Práticas",
+        title: "Tutorial Python - W3Schools",
+        provider: "W3Schools",
+        description: "Curso prático completo de sintaxe, estruturas de dados e conceitos de Python.",
+        url: "https://www.w3schools.com/python/default.asp",
+        status: "pending",
+        notes: ""
+      },
+
+      // BOLSAS & CURSOS ÚTEIS
       {
         id: "fiap-programa-eu-capacito",
         category: "Bolsas & Cursos Úteis",
@@ -729,7 +783,6 @@
       const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
       const todayDate = new Date();
 
-      // Monta os últimos 7 dias (do 6º dia atrás até hoje)
       for (let i = 6; i >= 0; i--) {
         const d = new Date();
         d.setDate(todayDate.getDate() - i);
@@ -739,7 +792,6 @@
         const dayNum = String(d.getDate()).padStart(2, '0');
         const isToday = (i === 0);
 
-        // Se for hoje, pega do acumulado ao vivo. Se for dia anterior, lê do localStorage.
         let secs = 0;
         if (isToday) {
           secs = getCurrentTotalSeconds();
@@ -748,10 +800,6 @@
           secs = storedSecs ? parseInt(storedSecs, 10) : 0;
         }
 
-        // Define Ícone com base nas regras:
-        // 🔥 = mais de 1 hora de estudo
-        // ✅ = estudou no dia (até 1 hora)
-        // ⚪ = não estudou (00:00h)
         let icon = "⚪";
         if (secs >= 3600) {
           icon = "🔥";
