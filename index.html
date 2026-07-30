@@ -86,9 +86,7 @@
     }
 
     /* CONTADOR DE TEMPO STYLES */
-    .pomo-select-container {
-      margin-bottom: 0.6rem;
-    }
+    .pomo-select-container { margin-bottom: 0.6rem; }
     .pomo-select {
       width: 100%; background: var(--bg-primary); border: 1px solid var(--border);
       color: var(--text-main); padding: 0.4rem 0.6rem; border-radius: 6px;
@@ -102,17 +100,20 @@
     }
     .pomo-controls { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
 
-    /* HISTÓRICO SEMANAL GRID STYLES */
+    /* HISTÓRICO SEMANAL GRID RESPONSIVO */
     .weekly-grid {
       display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.35rem;
       margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed var(--border);
+      overflow-x: auto; padding-bottom: 0.2rem;
     }
+    .weekly-grid::-webkit-scrollbar { height: 4px; }
+    .weekly-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
     .day-card {
       background: var(--bg-primary); border: 1px solid var(--border);
       border-radius: 8px; padding: 0.4rem 0.2rem; text-align: center;
       display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
-      transition: var(--transition);
+      min-width: 42px; transition: var(--transition);
     }
     .day-card.today { border-color: var(--accent); background: rgba(99, 102, 241, 0.08); }
     .day-name { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
@@ -196,12 +197,17 @@
 
     .category-title { font-size: 1.25rem; margin: 2rem 0 1rem 0; color: #cbd5e1; border-left: 4px solid var(--accent); padding-left: 0.5rem; }
 
-    /* COURSE CARD & NOTES */
+    /* COURSE CARD & NOTES (COM HOVER UX ELEVATION) */
     .course-list { display: flex; flex-direction: column; gap: 1rem; }
     .course-card {
       background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
       padding: 1.25rem; display: flex; flex-direction: column; gap: 0.8rem;
       transition: var(--transition);
+    }
+    .course-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.25);
+      border-color: rgba(99, 102, 241, 0.3);
     }
 
     .course-card-main { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
@@ -217,7 +223,7 @@
       background: var(--bg-primary); cursor: pointer; flex-shrink: 0; margin-top: 2px;
       display: flex; align-items: center; justify-content: center; transition: var(--transition);
     }
-    .status-btn:hover { border-color: var(--accent); }
+    .status-btn:hover { border-color: var(--accent); transform: scale(1.1); }
     
     .status-btn.in_progress { border-color: var(--progress-color); background: rgba(59, 130, 246, 0.2); }
     .status-btn.in_progress::after { content: "⏳"; font-size: 12px; }
@@ -240,6 +246,7 @@
     .btn-link:hover { background: var(--accent); color: #fff; }
     .btn-link.alt-link { color: var(--warning); background: rgba(245, 158, 11, 0.1); }
     .btn-link.alt-link:hover { background: var(--warning); color: #000; }
+    .btn-link.restricted { color: var(--text-muted); background: rgba(148, 163, 184, 0.1); pointer-events: none; opacity: 0.8; }
 
     /* EXPANDABLE NOTES */
     .notes-toggle {
@@ -254,6 +261,13 @@
       width: 100%; background: var(--bg-primary); border: 1px solid var(--border);
       color: var(--text-main); padding: 0.6rem; border-radius: 6px; font-size: 0.85rem;
       resize: vertical; min-height: 60px;
+    }
+
+    /* RESTRICTED NOTE BOX */
+    .restricted-note {
+      font-size: 0.8rem; color: #fde047; background: rgba(245, 158, 11, 0.08);
+      border-left: 3px solid var(--warning); padding: 0.4rem 0.6rem; border-radius: 4px;
+      margin-top: 0.4rem; line-height: 1.4;
     }
 
     /* TOAST MOTIVACIONAL */
@@ -375,6 +389,8 @@
     // ==========================================================================
     // DATA SOURCE & INITIAL STATE
     // ==========================================================================
+    const bootNoteMsg = "Esse curso é exclusivo para os alunos do bootcamp. Acessar o link que foi indicado nas plataformas de comunicação.";
+
     const initialCourses = [
       {
         id: "generation-canvas",
@@ -414,7 +430,8 @@
         title: "Creating Compelling Reports",
         provider: "Cisco Networking Academy",
         description: "Aprenda a criar relatórios impactantes e orientados a dados.",
-        url: "https://www.netacad.com/courses/compelling-reports?courseLang=en-US&instance_id=88c118e4-bcbb-40da-b7d1-51e272c387b9",
+        isRestricted: true,
+        restrictedMsg: bootNoteMsg,
         status: "pending",
         notes: ""
       },
@@ -424,7 +441,8 @@
         title: "Fundamentos da Análise de Dados",
         provider: "Cisco Networking Academy",
         description: "Conceitos essenciais e primeiros passos no ecossistema de dados.",
-        url: "https://www.netacad.com/courses/data-analytics-essentials?courseLang=pt-BR&instance_id=57ca6d6e-d0c8-438d-a536-a6208116b312",
+        isRestricted: true,
+        restrictedMsg: bootNoteMsg,
         status: "pending",
         notes: ""
       },
@@ -434,7 +452,8 @@
         title: "Introdução à Ciência de Dados",
         provider: "Cisco Networking Academy",
         description: "Visão geral sobre Ciência de Dados, IA e Machine Learning.",
-        url: "https://www.netacad.com/courses/introduction-data-science?courseLang=pt-BR&instance_id=5d9980b0-ba29-4166-bd14-9929eca66bec",
+        isRestricted: true,
+        restrictedMsg: bootNoteMsg,
         status: "pending",
         notes: ""
       },
@@ -453,10 +472,11 @@
       {
         id: "notion-aula-if-while-for",
         category: "Lições / Aulas Práticas",
-        title: "Notion",
-        provider: "Anotações e Materiais",
-        description: "Caderno completo no Notion com conteúdos de Ciência e Análise de Dados.",
-        url: "https://dramatic-yarn-f93.notion.site/Analise-ciencias-de-dados-2a0025a4a6e480a39ed7e74f71261813",
+        title: "Notion - Aulas e Materiais",
+        provider: "Anotações e Materiais do Professor",
+        description: "Caderno no Notion com conteúdos, anotações e materiais de Ciência e Análise de Dados.",
+        isRestricted: true,
+        restrictedMsg: "O conteúdo no Notion (Aulas e Materiais) está disponível nas plataformas de comunicação do bootcamp.",
         status: "pending",
         notes: ""
       },
@@ -546,6 +566,26 @@
       },
 
       // BOLSAS, CURSOS E LINKS ÚTEIS (NÃO É PRIORIDADE)
+      {
+        id: "mimo-app-programacao",
+        category: "Bolsas, Cursos e links úteis (não é prioridade)",
+        title: "Mimo: Aprenda Programação",
+        provider: "Mimo.org",
+        description: "Aprenda programação de forma interativa: Python, JavaScript, TypeScript, SQL, CSS e HTML.",
+        url: "https://mimo.org/",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "livro-estatistica-basica-icmc",
+        category: "Bolsas, Cursos e links úteis (não é prioridade)",
+        title: "Livro Gratuito: Estatística Básica",
+        provider: "CeMEAI / ICMC - USP",
+        description: "Livro gratuito sobre estatística básica com suporte computacional e códigos em R.",
+        url: "https://cemeai.icmc.usp.br/livro-estatistica-basica/",
+        status: "pending",
+        notes: ""
+      },
       {
         id: "coddy-tech-programacao",
         category: "Bolsas, Cursos e links úteis (não é prioridade)",
@@ -970,6 +1010,14 @@
     }
 
     function stopTimer() {
+      const totalSecs = getCurrentTotalSeconds();
+      
+      // UX PROTECTION: Confirmação antes de finalizar se houver tempo rodando/acumulado
+      if (totalSecs > 0) {
+        const confirmStop = confirm("Deseja encerrar a sessão de estudos de hoje?");
+        if (!confirmStop) return;
+      }
+
       if (timerInterval !== null) {
         clearInterval(timerInterval);
         timerInterval = null;
@@ -978,7 +1026,6 @@
       saveCurrentSession();
       sessionStartTimestamp = null;
 
-      const totalSecs = getCurrentTotalSeconds();
       if (totalSecs > 0) {
         const totalFormatted = formatTime(savedDaySeconds);
         let courseMsg = "";
@@ -1145,26 +1192,41 @@
           const card = document.createElement('div');
           card.className = `course-card ${course.status}`;
 
-          const altLinkHtml = course.altUrl ? `
-            <a href="${course.altUrl}" target="_blank" class="btn-link alt-link">${course.altUrlLabel || 'Link Alternativo'} ↗</a>
+          let linkHtml = '';
+          if (course.isRestricted) {
+            linkHtml = `<span class="btn-link restricted">🔒 Acesso Restrito</span>`;
+          } else {
+            const altLinkHtml = course.altUrl ? `
+              <a href="${course.altUrl}" target="_blank" class="btn-link alt-link">${course.altUrlLabel || 'Link Alternativo'} ↗</a>
+            ` : '';
+            linkHtml = `
+              <a href="${course.url}" target="_blank" class="btn-link">Acessar ↗</a>
+              ${altLinkHtml}
+            `;
+          }
+
+          const restrictedNoteHtml = course.isRestricted ? `
+            <div class="restricted-note">
+              ℹ️ ${course.restrictedMsg}
+            </div>
           ` : '';
 
           card.innerHTML = `
             <div class="course-card-main">
               <div class="course-info">
-                <button class="status-btn ${course.status}" onclick="cycleCourseStatus('${course.id}')" title="Mudar estado"></button>
-                <div>
+                <button class="status-btn ${course.status}" onclick="cycleCourseStatus('${course.id}')" title="Clique para alterar status"></button>
+                <div style="flex: 1;">
                   <h3>
                     <span class="course-title-text">${course.title}</span>
                     <span class="badge ${course.status}">${course.status === 'completed' ? 'Concluído' : course.status === 'in_progress' ? 'Em andamento' : 'Pendente'}</span>
                   </h3>
                   <p><strong>${course.provider}</strong> ${course.description ? '— ' + course.description.replace(/\n/g, '<br>') : ''}</p>
+                  ${restrictedNoteHtml}
                   <button class="notes-toggle" onclick="toggleNotesVisibility('${course.id}')">📝 Anotações Rápidas</button>
                 </div>
               </div>
               <div class="links-group">
-                <a href="${course.url}" target="_blank" class="btn-link">Acessar ↗</a>
-                ${altLinkHtml}
+                ${linkHtml}
               </div>
             </div>
 
