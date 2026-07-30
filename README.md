@@ -1,101 +1,60 @@
 # 📊 Trilha de Estudos & Planner Diário: Análise de Dados
 
-Bem-vindo à nossa plataforma unificada de acompanhamento de estudos! Este projeto foi desenvolvido para organizar, centralizar e motivar nossa turma durante a jornada no universo de Análise de Dados, reunindo cursos complementares, lições práticas, bolsas e o acompanhamento diário do **Canvas (Generation Brazil)**.
+Bem-vindo ao **Data Planner**! Esta é uma plataforma simples, direta e intuitiva criada para organizar, acompanhar e motivar seus estudos em Análise de Dados, reunindo em um só lugar seus cursos, links de aulas e o registro de tempo de dedicação.
 
-Acesse o site do Planner aqui: [https://maria-apsguiar.github.io/Data-Planner/](https://maria-apsguiar.github.io/Data-Planner/)
----
-
-## 🚀 Como Acessar e Usar
-
-Não é necessário instalar nada! Você pode utilizar a plataforma de duas formas:
-
-1. **Acesso Direto pelo Link (Recomendado):** Basta abrir o link do site no seu navegador e adicionar aos favoritos.
-2. **Uso Local:** Baixe o arquivo `index.html` e dê um duplo clique para abrir diretamente em qualquer navegador.
+🔗 **Acesse a aplicação ao vivo:** [https://maria-apsguiar.github.io/Data-Planner/](https://maria-apsguiar.github.io/Data-Planner/)
 
 ---
 
-## ⚙️ Principais Funcionalidades
+## ⚡ Como Funciona (O Essencial)
 
-### 1. 🔄 Controle de Estado dos Cursos (3 Cliques)
-Cada card possui um botão de status no canto esquerdo. Clique nele para alternar a situação do curso:
-* **Pendente (⚪):** Curso que você ainda não começou.
-* **Em andamento (⏳):** Cursos em que você deu o 1º clique. Eles aparecem destacados em azul e **entram automaticamente na sua Agenda Diária**.
-* **Concluído (✓):** Cursos em que você deu o 2º clique. O texto fica riscado, o card fica verde e ele soma na sua **Barra de Progresso Geral**.
+Você não precisa instalar nada e nem criar conta. Tudo é salvo **automaticamente no seu próprio navegador**.
 
 ---
 
-### 2. 📅 Agenda Diária de Acompanhamento
-Projetada para o período de **26/07/2026 a 31/10/2026**:
-* Todos os cursos que estiverem com status **"Em andamento"** aparecem diariamente na agenda.
-* Selecione a data desejada e clique no botão **Check-in** para registrar seu progresso naquele dia.
-* Ao concluir um curso, ele para de aparecer nos dias futuros da agenda, mantendo o histórico dos dias passados.
-
-> ⚠️ **Lembrete sobre o Canvas:** O item do Canvas já vem ativado em "Em andamento" por padrão. Lembre-se de só realizar o check-in diário na agenda se você já tiver dado check no Canvas nas aulas síncronas e confirmado a realização de todas as atividades passadas pelos professores.
+### 1. ⏱️ Temporizador de Estudos & Seleção de Curso
+* **Registro de Horas:** Dê **Play (▶)** para iniciar seus estudos, **Pause (⏸)** para pausas e **Finalizar Dia (⏹)** ao terminar.
+* **Vinculado ao Curso:** Antes de dar Play, você pode escolher no menu suspenso qual curso "Em andamento" vai estudar. O tempo contado será somado tanto no seu total do dia quanto **especificamente naquele curso**.
+* **Funciona em Segundo Plano:** O tempo é atualizado direto na aba do navegador (ex: `⏱️ 01:30:00 - Planner`), permitindo que você assista às aulas em outras abas sem travar a contagem.
 
 ---
 
-### 3. 🔥 Contador de Ofensiva (Streak) & Mensagens Motivacionais
-* **Streak:** Contabiliza quantos dias seguidos você realizou check-ins de estudo na agenda.
-* **Reforço Positivo:** A cada conquista na agenda ou conclusão de curso, mensagens motivacionais aparecem na tela para comemorar seu progresso (porque 1% melhor a cada dia faz toda a diferença!).
+### 2. 📅 Agenda Diária Inteligente
+* **Cursos em Andamento:** Qualquer item marcado como "Em andamento" entra automaticamente na sua agenda diária.
+* **Contador de Tempo Integrado:** A agenda mostra exatamente quanto tempo você já estudou naquele curso no dia selecionado (ex: `⏱️ Tempo estudado hoje: 1h 30m`).
+* **Check-in Diário:** Marque o botão de Check-in ao cumprir suas tarefas do dia.
 
 ---
 
-### 4. ⏱️ Registro de Horas & 📊 Histórico Semanal (Últimos 7 Dias)
-* **Contador de Tempo Contínuo (Play / Pause / Stop):** Dê **Play** para iniciar seus estudos e **Pause** ou **Finalizar Dia** quando fizer pausas. O tempo é acumulado ao longo do dia e exibido em tempo real **no título da aba do navegador**, permitindo que você navegue em outras abas de aula sem perder a contagem.
-* **Dashboard dos Últimos 7 Dias:** Logo abaixo do relógio, uma grade visual exibe a sua dedicação ao longo da semana:
-  * 🔥 **Foguinho:** Dias com mais de 1 hora de estudo acumulada.
-  * ✅ **Check Verde:** Dias com sessões de estudo registradas.
-  * ⚪ **Bolinha:** Dias em que não houve registro de estudos.
-* **Anotações Rápidas:** Clique em `📝 Anotações Rápidas` em qualquer card para registrar comandos, resumos, insights ou dúvidas. Suas anotações ficam salvas automaticamente.
+### 3. 📊 Dashboard Semanal (Últimos 7 Dias) & Ofensiva
+* **Grade dos Últimos 7 Dias:** Logo abaixo do relógio, você acompanha seu desempenho visual da semana:
+  * 🔥 **Foguinho:** Dias com mais de 1 hora de estudo.
+  * ✅ **Check Verde:** Dias com estudo registrado.
+  * ⚪ **Bolinha:** Dias sem registro de estudo.
+* **Ofensiva (Streak):** Contabiliza seus dias seguidos de check-in na agenda.
 
 ---
 
-## 💾 Privacidade, Salvamento Automático e Backup
-
-O **Data Planner** foi planejado para garantir total privacidade e praticidade:
-
-* **Salvo Automaticamente (localStorage):** Não é preciso criar contas ou fazer login. Todo o seu progresso (cursos em andamento, anotações, checks na agenda, histórico semanal e horas estudadas) é salvo automaticamente no seu próprio navegador. 
-* **Atualizações Sem Perdas:** Quando novas aulas ou cursos são adicionados ao projeto principal no GitHub, você recebe as melhorias ao acessar o site, mas o seu histórico e progresso pessoal continuam intactos.
-
-### 📥 📤 Importar e Exportar Progresso (Backup Manual)
-Caso precise trocar de computador, mudar de navegador (ex: do Chrome para o Safari) ou queira fazer uma cópia de segurança por precaução:
-* **Exportar:** Clique em `📥 Exportar` para baixar um arquivo leve de backup (`.json`) com todo o seu histórico atual.
-* **Importar:** No novo dispositivo ou navegador, clique em `📤 Importar`, selecione o seu arquivo `.json` e toda a sua evolução será restaurada instantaneamente.
+### 4. 📚 Organização do Conteúdo
+A lista principal é organizada por categorias claras para facilitar seu foco:
+* 📌 **Acompanhamento Diário:** Foco principal (ex: Canvas da Generation).
+* 🎯 **Cursos Principais:** Certificações e cursos estruturados.
+* 🛠️ **Lições / Aulas Práticas:** Ferramentas hands-on (Notion, Google Colab, Draw.io, Pandas, Python, etc.).
+* 🇬🇧 **Links úteis para Inglês:** Guia de aplicativos recomendados para prática diária (Duolingo, HelloTalk).
+* 💡 **Bolsas, Cursos e Links úteis (não é prioridade):** Plataforma de estudos adicionais, acervos de livros e conteúdos de tecnologia.
 
 ---
 
-## ➕ Adicionando Conteúdos Próprios
-
-Achou um curso ou artigo legal e quer incluir na sua lista? Clique no botão **`+ Criar Novo`** na barra de ferramentas. Ele ficará salvo na seção *"Adicionados por Você"*.
-
----
-
-## 💬 Sugestões, Dúvidas e Feedback
-
-Este projeto é feito de aluno para aluno! Se você tiver sugestões de melhoria, encontrar algum link quebrado ou quiser indicar novos cursos para entrar no código principal da turma:
-
-📬 **Contate o criador do arquivo / mantenedor do repositório** diretamente pelo Discord/WhatsApp da turma ou abrindo uma *Issue* aqui no GitHub.
-
----
-*Bons estudos e vamos pra cima! 🚀*
-### 📥 📤 Importar e Exportar Progresso (Backup Manual)
-Caso precise trocar de computador, mudar de navegador (ex: do Chrome para o Safari) ou queira fazer uma cópia de segurança por precaução:
-* **Exportar:** Clique em `📥 Exportar` para baixar um arquivo leve de backup (`.json`) com todo o seu histórico atual.
-* **Importar:** No novo dispositivo ou navegador, clique em `📤 Importar`, selecione o seu arquivo `.json` e toda a sua evolução será restaurada instantaneamente.
+### 5. 🔄 Estado dos Cursos & Anotações
+* **Status em 1 Clique:** Alterne entre **Pendente (⚪)**, **Em andamento (⏳)** e **Concluído (✓)**.
+* **📝 Anotações Rápidas:** Em cada card de curso, você pode expandir uma caixa de texto para registrar comandos, códigos ou lembretes importantes.
 
 ---
 
-## ➕ Adicionando Conteúdos Próprios
+## 💾 Salvamento Automático e Backup
 
-Achou um curso ou artigo legal e quer incluir na sua lista? Clique no botão **`+ Criar Novo`** na barra de ferramentas. Ele ficará salvo na seção *"Adicionados por Você"*.
-
----
-
-## 💬 Sugestões, Dúvidas e Feedback
-
-Este projeto é feito de aluno para aluno! Se você tiver sugestões de melhoria, encontrar algum link quebrado ou quiser indicar novos cursos para entrar no código principal da turma:
-
-📬 **Contate o criador do arquivo / mantenedor do repositório** diretamente pelo Discord/WhatsApp da turma ou abrindo uma *Issue* aqui no GitHub.
+* **Privacidade Total:** Seus dados (anotações, tempo e checks) ficam guardados com segurança no seu navegador (`localStorage`).
+* **Backup Manual:** Use os botões **`📥 Exportar`** e **`📤 Importar`** na barra de ferramentas caso queira transferir seus dados para outro computador ou celular.
 
 ---
-*Bons estudos e vamos pra cima! 🚀*
+*Feito de estudante para estudantes. Bons estudos! 🚀*
