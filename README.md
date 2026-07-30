@@ -1,60 +1,63 @@
-# 📊 Trilha de Estudos & Planner Diário: Análise de Dados
+# 📊 Data Planner: Trilha de Estudos & Planner Diário em Análise de Dados
 
-Bem-vindo ao **Data Planner**! Esta é uma plataforma simples, direta e intuitiva criada para organizar, acompanhar e motivar seus estudos em Análise de Dados, reunindo em um só lugar seus cursos, links de aulas e o registro de tempo de dedicação.
+O **Data Planner** é uma aplicação web desenvolvida para organizar, acompanhar e motivar a rotina de estudos em Análise de Dados. O projeto resolve a dor da inconsistência na aprendizagem, unificando a gestão de conteúdos com o registro do tempo real de dedicação por matéria.
 
-🔗 **Acesse a aplicação ao vivo:** [https://maria-apsguiar.github.io/Data-Planner/](https://maria-apsguiar.github.io/Data-Planner/)
-
----
-
-## ⚡ Como Funciona (O Essencial)
-
-Você não precisa instalar nada e nem criar conta. Tudo é salvo **automaticamente no seu próprio navegador**.
+🔗 **Acesse a aplicação online:** [https://maria-apsguiar.github.io/Data-Planner/](https://maria-apsguiar.github.io/Data-Planner/)
 
 ---
 
-### 1. ⏱️ Temporizador de Estudos & Seleção de Curso
-* **Registro de Horas:** Dê **Play (▶)** para iniciar seus estudos, **Pause (⏸)** para pausas e **Finalizar Dia (⏹)** ao terminar.
-* **Vinculado ao Curso:** Antes de dar Play, você pode escolher no menu suspenso qual curso "Em andamento" vai estudar. O tempo contado será somado tanto no seu total do dia quanto **especificamente naquele curso**.
-* **Funciona em Segundo Plano:** O tempo é atualizado direto na aba do navegador (ex: `⏱️ 01:30:00 - Planner`), permitindo que você assista às aulas em outras abas sem travar a contagem.
+## ⚡ Usabilidade & Principais Funcionalidades
+
+A ferramenta foi projetada com foco na experiência do usuário (UX), sem necessidade de cadastros ou instalações — todos os dados são salvos com privacidade no próprio navegador (`localStorage`).
 
 ---
 
-### 2. 📅 Agenda Diária Inteligente
-* **Cursos em Andamento:** Qualquer item marcado como "Em andamento" entra automaticamente na sua agenda diária.
-* **Contador de Tempo Integrado:** A agenda mostra exatamente quanto tempo você já estudou naquele curso no dia selecionado (ex: `⏱️ Tempo estudado hoje: 1h 30m`).
-* **Check-in Diário:** Marque o botão de Check-in ao cumprir suas tarefas do dia.
+### 1. ⏱️ Temporizador Diário & Vinculação por Curso
+* **Gestão Flexível de Horas:** Dê **Play (▶)** para iniciar seus estudos, **Pause (⏸)** para pausas e **Finalizar Dia (⏹)** para encerrar o ciclo.
+* **Rastreamento Individual:** Antes de iniciar a contagem, é possível selecionar qual curso em andamento você vai estudar. O tempo contado é acumulado tanto no total do dia quanto **especificamente no histórico daquela matéria**.
+* **Proteção de Dados:** Ao clicar em *Finalizar Dia*, a aplicação solicita confirmação para evitar perdas acidentais de tempo registrado.
+* **Modo Segundo Plano:** A contagem continua rodando mesmo enquanto você assiste a aulas em outras abas, exibindo o tempo direto no título da janela (ex: `⏱️ 01:30:00 - Planner`).
 
 ---
 
-### 3. 📊 Dashboard Semanal (Últimos 7 Dias) & Ofensiva
-* **Grade dos Últimos 7 Dias:** Logo abaixo do relógio, você acompanha seu desempenho visual da semana:
-  * 🔥 **Foguinho:** Dias com mais de 1 hora de estudo.
+### 2. 📅 Agenda Diária Dinâmica
+* **Acompanhamento Automático:** Cursos marcados como "Em andamento" entram direto na agenda do dia selecionado.
+* **Métrica de Dedicação por Matéria:** Exibe o tempo exato acumulado em cada curso no dia (ex: `⏱️ Tempo estudado hoje: 1h 30m`).
+* **Check-in Inteligente:** Botão simples para confirmar a conclusão do dia, com lembretes visuais em tarefas síncronas/obrigatórias (como o Canvas da Generation).
+
+---
+
+### 3. 🔥 Dashboard Semanal (Últimos 7 Dias) & Gamificação
+* **Histórico dos Últimos 7 Dias:** Painel responsivo que exibe seu desempenho diário com indicadores visuais:
+  * 🔥 **Foguinho:** Dias com 1 hora ou mais de estudo.
   * ✅ **Check Verde:** Dias com estudo registrado.
-  * ⚪ **Bolinha:** Dias sem registro de estudo.
-* **Ofensiva (Streak):** Contabiliza seus dias seguidos de check-in na agenda.
+  * ⚪ **Bolinha:** Dias sem registro.
+* **Ofensiva (Streak):** Contador de dias seguidos de check-in para manter a motivação e constância.
 
 ---
 
-### 4. 📚 Organização do Conteúdo
-A lista principal é organizada por categorias claras para facilitar seu foco:
-* 📌 **Acompanhamento Diário:** Foco principal (ex: Canvas da Generation).
-* 🎯 **Cursos Principais:** Certificações e cursos estruturados.
-* 🛠️ **Lições / Aulas Práticas:** Ferramentas hands-on (Notion, Google Colab, Draw.io, Pandas, Python, etc.).
-* 🇬🇧 **Links úteis para Inglês:** Guia de aplicativos recomendados para prática diária (Duolingo, HelloTalk).
-* 💡 **Bolsas, Cursos e Links úteis (não é prioridade):** Plataforma de estudos adicionais, acervos de livros e conteúdos de tecnologia.
+### 4. 📚 Curadoria & Categorias de Conteúdo
+A lista principal organiza os materiais para facilitar a navegação:
+* 📌 **Acompanhamento Diário:** Foco diário síncrono.
+* 🎯 **Cursos Principais:** Certificações e formação base.
+* 🛠️ **Lições / Aulas Práticas:** Ferramentas hands-on (Google Colab, Draw.io, Diagrams.net, Pandas, Python, etc.).
+* 🇬🇧 **Links úteis para Inglês:** Guia de apps recomendados para prática diária (Duolingo, HelloTalk).
+* 💡 **Bolsas, Cursos e Links Úteis:** Plataformas complementares (Mimo, Livro de Estatística da USP, Santander, DIO, Rocketseat, etc.).
+* 🔒 **Transparência e Acesso Restrito:** Conteúdos exclusivos de bootcamp possuem aviso explicativo transparente sem expor URLs privadas.
 
 ---
 
-### 5. 🔄 Estado dos Cursos & Anotações
-* **Status em 1 Clique:** Alterne entre **Pendente (⚪)**, **Em andamento (⏳)** e **Concluído (✓)**.
-* **📝 Anotações Rápidas:** Em cada card de curso, você pode expandir uma caixa de texto para registrar comandos, códigos ou lembretes importantes.
+### 5. 📝 Anotações Rápidas & Estado dos Cursos
+* **Três Estados:** Alterne com um clique entre **Pendente (⚪)**, **Em andamento (⏳)** e **Concluído (✓)**.
+* **Bloco de Notas Integrado:** Cada card possui uma área expansível para salvar comandos, trechos de código e lembretes rápidos.
+* **Backup Geral:** Botões de **`📥 Exportar`** e **`📤 Importar`** para transferência simples de dados via arquivo `.json`.
 
 ---
 
-## 💾 Salvamento Automático e Backup
-
-* **Privacidade Total:** Seus dados (anotações, tempo e checks) ficam guardados com segurança no seu navegador (`localStorage`).
-* **Backup Manual:** Use os botões **`📥 Exportar`** e **`📤 Importar`** na barra de ferramentas caso queira transferir seus dados para outro computador ou celular.
+## 🛠️ Tecnologias Utilizadas
+* **Frontend:** HTML5, CSS3 (CSS Variables, Flexbox, CSS Grid) e JavaScript Vanilla.
+* **Persistência de Dados:** Web Storage API (`localStorage`).
+* **Versionamento & Deploy:** Git, GitHub e GitHub Pages.
 
 ---
-*Feito de estudante para estudantes. Bons estudos! 🚀*
+*Projeto desenvolvido por estudante para estudantes. Bons estudos! 🚀*
