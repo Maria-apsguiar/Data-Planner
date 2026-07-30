@@ -86,9 +86,19 @@
     }
 
     /* CONTADOR DE TEMPO STYLES */
+    .pomo-select-container {
+      margin-bottom: 0.6rem;
+    }
+    .pomo-select {
+      width: 100%; background: var(--bg-primary); border: 1px solid var(--border);
+      color: var(--text-main); padding: 0.4rem 0.6rem; border-radius: 6px;
+      font-size: 0.82rem; font-weight: 600; cursor: pointer;
+    }
+    .pomo-select:focus { border-color: var(--accent); outline: none; }
+
     .pomo-display {
       font-size: 2.2rem; font-weight: 800; text-align: center;
-      font-family: monospace; color: var(--accent); margin: 0.5rem 0;
+      font-family: monospace; color: var(--accent); margin: 0.2rem 0 0.5rem 0;
     }
     .pomo-controls { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
 
@@ -134,6 +144,13 @@
     .agenda-item.checked .agenda-title { text-decoration: line-through; color: var(--text-muted); }
 
     .agenda-title { font-weight: 600; font-size: 0.92rem; }
+
+    .agenda-course-time {
+      font-size: 0.78rem; font-weight: 600; color: #60a5fa;
+      background: rgba(59, 130, 246, 0.1); padding: 0.25rem 0.5rem;
+      border-radius: 4px; display: inline-flex; align-items: center; gap: 0.3rem;
+      width: fit-content; margin-top: 0.1rem;
+    }
 
     .agenda-checkbox-label {
       display: flex; align-items: center; gap: 0.5rem; cursor: pointer;
@@ -307,6 +324,14 @@
           <span>⏱️ Registro de Horas de Estudo</span>
           <span id="pomo-mode-label" style="font-size: 0.8rem; color: var(--text-muted);">Acumulado Hoje</span>
         </div>
+
+        <!-- SELETOR DE CURSO VINCULADO AO TEMPORIZADOR -->
+        <div class="pomo-select-container">
+          <select id="pomo-course-select" class="pomo-select" onchange="onCourseSelectChange()">
+            <option value="">🎯 Estudo Geral (Sem curso específico)</option>
+          </select>
+        </div>
+
         <div class="pomo-display" id="pomo-timer">00:00:00</div>
         <div class="pomo-controls">
           <button class="btn" onclick="startTimer()">▶ Play</button>
@@ -456,6 +481,26 @@
         notes: ""
       },
       {
+        id: "app-diagrams-net",
+        category: "Lições / Aulas Práticas",
+        title: "Diagrams.net",
+        provider: "Ferramenta para Diagramas",
+        description: "Ferramenta web para criação e edição de diagramas e fluxogramas.",
+        url: "https://app.diagrams.net",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "fluency-academy-curso",
+        category: "Lições / Aulas Práticas",
+        title: "Curso de idiomas FLUENCY ACADEMY",
+        provider: "Curso PAGO (Valores Acessíveis com Conversação)",
+        description: "Curso completo de idiomas com aulas e prática de conversação.",
+        url: "https://indiquei.app/J5f8gk",
+        status: "pending",
+        notes: ""
+      },
+      {
         id: "pandas-doc-oficial",
         category: "Lições / Aulas Práticas",
         title: "Documentação Oficial - Biblioteca Pandas",
@@ -486,7 +531,61 @@
         notes: ""
       },
 
+      // LINKS ÚTEIS PARA INGLÊS
+      {
+        id: "apps-ingles-sugestao",
+        category: "Links úteis para Inglês",
+        title: "Sugestão de APPs para celular pra estudar inglês",
+        provider: "Duolingo & HelloTalk",
+        description: "• Duolingo: Gramática, pronúncia e vocabulário.\n• HelloTalk: Pratique conversação com estrangeiros via escrita ou áudio.\n(Ambos possuem versões gratuitas com limites diários e opções pagas).",
+        url: "https://www.duolingo.com/",
+        altUrl: "https://www.hellotalk.com/",
+        altUrlLabel: "HelloTalk ↗",
+        status: "pending",
+        notes: ""
+      },
+
       // BOLSAS, CURSOS E LINKS ÚTEIS (NÃO É PRIORIDADE)
+      {
+        id: "coddy-tech-programacao",
+        category: "Bolsas, Cursos e links úteis (não é prioridade)",
+        title: "Aprenda programação com CODDY",
+        provider: "Coddy.tech",
+        description: "O 'Duolingo' da programação. Aulas interativas e práticas direto no navegador.",
+        url: "https://coddy.tech/",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "santander-open-academy",
+        category: "Bolsas, Cursos e links úteis (não é prioridade)",
+        title: "Santander Open Academy",
+        provider: "Santander",
+        description: "Cursos gratuitos de qualidade em Negócios, Tecnologia e Idiomas.",
+        url: "https://www.santanderopenacademy.com/pt_br/index.html",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "dio-me-tecnologia",
+        category: "Bolsas, Cursos e links úteis (não é prioridade)",
+        title: "DIO (Digital Innovation One)",
+        provider: "DIO.me",
+        description: "Cursos gratuitos e pagos focados em desenvolvimento e tecnologia.",
+        url: "https://www.dio.me",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "rocketseat-tecnologia",
+        category: "Bolsas, Cursos e links úteis (não é prioridade)",
+        title: "Rocketseat",
+        provider: "Rocketseat",
+        description: "Cursos e bootcamps gratuitos e pagos focados em programação e tecnologia.",
+        url: "https://www.rocketseat.com.br/",
+        status: "pending",
+        notes: ""
+      },
       {
         id: "drive-de-pobre-livros",
         category: "Bolsas, Cursos e links úteis (não é prioridade)",
@@ -598,6 +697,7 @@
       calculateStreak();
       render();
       renderAgenda();
+      populateTimerCourseSelect();
     }
 
     function triggerMotivationalToast() {
@@ -641,7 +741,7 @@
     }
 
     // ==========================================================================
-    // AGENDA LOGIC
+    // AGENDA LOGIC & RENDER
     // ==========================================================================
     const agendaDatePicker = document.getElementById('agenda-date');
     const todayLocal = getLocalDateString();
@@ -664,6 +764,18 @@
       save();
     }
 
+    function getCourseTimeForDate(courseId, dateStr) {
+      const key = `data_planner_course_timer_${dateStr}_${courseId}`;
+      const savedSecs = localStorage.getItem(key);
+      let secs = savedSecs ? parseInt(savedSecs, 10) : 0;
+
+      if (timerInterval !== null && activeCourseId === courseId && dateStr === getLocalDateString()) {
+        const currentSessionSecs = Math.floor((Date.now() - sessionStartTimestamp) / 1000);
+        secs += currentSessionSecs;
+      }
+      return secs;
+    }
+
     function renderAgenda() {
       const selectedDate = agendaDatePicker.value;
       const container = document.getElementById('agenda-items-container');
@@ -680,6 +792,9 @@
 
       activeCourses.forEach(course => {
         const isChecked = completedToday.includes(course.id);
+        const courseSecs = getCourseTimeForDate(course.id, selectedDate);
+        const courseTimeFormatted = formatShortTime(courseSecs);
+
         const item = document.createElement('div');
         item.className = `agenda-item ${isChecked ? 'checked' : ''}`;
         
@@ -697,6 +812,9 @@
               <span>${isChecked ? 'Concluído' : 'Check-in'}</span>
             </label>
           </div>
+          <div class="agenda-course-time">
+            ⏱️ Tempo estudado hoje: <strong>${courseTimeFormatted}</strong>
+          </div>
           ${canvasNoteHtml}
         `;
         container.appendChild(item);
@@ -710,21 +828,64 @@
     }
 
     // ==========================================================================
-    // CONTADOR DE TEMPO PERSISTENTE & HISTÓRICO SEMANAL
+    // CONTADOR DE TEMPO PERSISTENTE (GERAL + POR CURSO)
     // ==========================================================================
     let timerInterval = null;
     let sessionStartTimestamp = null;
     let savedDaySeconds = 0;
+    let savedCourseSeconds = 0;
+    let activeCourseId = "";
     const originalTitle = "Trilha de Estudos & Planner: Análise de Dados";
 
     function getStorageKey(dateStr = getLocalDateString()) {
       return `data_planner_timer_${dateStr}`;
     }
 
+    function getCourseStorageKey(courseId, dateStr = getLocalDateString()) {
+      return `data_planner_course_timer_${dateStr}_${courseId}`;
+    }
+
+    function populateTimerCourseSelect() {
+      const select = document.getElementById('pomo-course-select');
+      if (!select) return;
+
+      const selectedValue = select.value;
+      select.innerHTML = '<option value="">🎯 Estudo Geral (Sem curso específico)</option>';
+
+      const activeCourses = courses.filter(c => c.status === 'in_progress');
+      activeCourses.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = `📚 ${c.title}`;
+        select.appendChild(opt);
+      });
+
+      select.value = selectedValue;
+    }
+
+    function onCourseSelectChange() {
+      if (timerInterval !== null) {
+        saveCurrentSession();
+        sessionStartTimestamp = Date.now();
+      }
+      activeCourseId = document.getElementById('pomo-course-select').value;
+      loadSavedTimer();
+    }
+
     function loadSavedTimer() {
       const key = getStorageKey();
       const savedSecs = localStorage.getItem(key);
       savedDaySeconds = savedSecs ? parseInt(savedSecs, 10) : 0;
+
+      activeCourseId = document.getElementById('pomo-course-select').value;
+      if (activeCourseId) {
+        const cKey = getCourseStorageKey(activeCourseId);
+        const cSecs = localStorage.getItem(cKey);
+        savedCourseSeconds = cSecs ? parseInt(cSecs, 10) : 0;
+      } else {
+        savedCourseSeconds = 0;
+      }
+
       updateTimerDisplay();
     }
 
@@ -739,7 +900,7 @@
       if (!totalSeconds || totalSeconds <= 0) return "00:00h";
       const hrs = Math.floor(totalSeconds / 3600);
       const mins = Math.floor((totalSeconds % 3600) / 60);
-      if (hrs > 0) return `${hrs}h${mins > 0 ? mins + 'm' : ''}`;
+      if (hrs > 0) return `${hrs}h${mins > 0 ? ' ' + mins + 'm' : ''}`;
       return `${mins}m`;
     }
 
@@ -749,6 +910,20 @@
         return savedDaySeconds + currentSessionSecs;
       }
       return savedDaySeconds;
+    }
+
+    function saveCurrentSession() {
+      if (sessionStartTimestamp !== null) {
+        const sessionSecs = Math.floor((Date.now() - sessionStartTimestamp) / 1000);
+        
+        savedDaySeconds += sessionSecs;
+        localStorage.setItem(getStorageKey(), savedDaySeconds.toString());
+
+        if (activeCourseId) {
+          savedCourseSeconds += sessionSecs;
+          localStorage.setItem(getCourseStorageKey(activeCourseId), savedCourseSeconds.toString());
+        }
+      }
     }
 
     function updateTimerDisplay() {
@@ -765,12 +940,14 @@
       }
 
       renderWeeklyGrid();
+      renderAgenda();
     }
 
     function startTimer() {
       if (timerInterval !== null) return;
       document.getElementById('summary-msg').textContent = "";
       
+      activeCourseId = document.getElementById('pomo-course-select').value;
       sessionStartTimestamp = Date.now();
 
       timerInterval = setInterval(() => {
@@ -785,30 +962,38 @@
         clearInterval(timerInterval);
         timerInterval = null;
         
-        savedDaySeconds = getCurrentTotalSeconds();
+        saveCurrentSession();
         sessionStartTimestamp = null;
         
-        localStorage.setItem(getStorageKey(), savedDaySeconds.toString());
         updateTimerDisplay();
       }
     }
 
     function stopTimer() {
-      const totalSecs = getCurrentTotalSeconds();
-      
-      if (totalSecs > 0) {
-        savedDaySeconds = totalSecs;
-        localStorage.setItem(getStorageKey(), savedDaySeconds.toString());
-        const totalFormatted = formatTime(savedDaySeconds);
-        document.getElementById('summary-msg').textContent = `🎉 Parabéns! Você acumulou ${totalFormatted} de estudos hoje!`;
-        triggerMotivationalToast();
-      }
-      
       if (timerInterval !== null) {
         clearInterval(timerInterval);
         timerInterval = null;
       }
+
+      saveCurrentSession();
       sessionStartTimestamp = null;
+
+      const totalSecs = getCurrentTotalSeconds();
+      if (totalSecs > 0) {
+        const totalFormatted = formatTime(savedDaySeconds);
+        let courseMsg = "";
+        
+        if (activeCourseId) {
+          const course = courses.find(c => c.id === activeCourseId);
+          const cSecs = localStorage.getItem(getCourseStorageKey(activeCourseId));
+          const cFormatted = formatShortTime(cSecs ? parseInt(cSecs, 10) : 0);
+          courseMsg = ` (${cFormatted} no curso "${course ? course.title : ''}")`;
+        }
+
+        document.getElementById('summary-msg').textContent = `🎉 Parabéns! Você acumulou ${totalFormatted} de estudos hoje${courseMsg}!`;
+        triggerMotivationalToast();
+      }
+      
       updateTimerDisplay();
     }
 
@@ -973,7 +1158,7 @@
                     <span class="course-title-text">${course.title}</span>
                     <span class="badge ${course.status}">${course.status === 'completed' ? 'Concluído' : course.status === 'in_progress' ? 'Em andamento' : 'Pendente'}</span>
                   </h3>
-                  <p><strong>${course.provider}</strong> ${course.description ? '— ' + course.description : ''}</p>
+                  <p><strong>${course.provider}</strong> ${course.description ? '— ' + course.description.replace(/\n/g, '<br>') : ''}</p>
                   <button class="notes-toggle" onclick="toggleNotesVisibility('${course.id}')">📝 Anotações Rápidas</button>
                 </div>
               </div>
@@ -1000,6 +1185,7 @@
     // Initial Load
     calculateStreak();
     render();
+    populateTimerCourseSelect();
     renderAgenda();
     loadSavedTimer();
   </script>
