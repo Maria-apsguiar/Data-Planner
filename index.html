@@ -241,7 +241,7 @@
     .btn-link {
       color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.85rem;
       padding: 0.4rem 0.75rem; border-radius: 6px; background: rgba(99, 102, 241, 0.1); white-space: nowrap;
-      transition: var(--transition);
+      transition: var(--transition); text-align: center;
     }
     .btn-link:hover { background: var(--accent); color: #fff; }
     .btn-link.alt-link { color: var(--warning); background: rgba(245, 158, 11, 0.1); }
@@ -468,6 +468,18 @@
         notes: ""
       },
 
+      // CONTEÚDO RECOMENDADO
+      {
+        id: "evelin-lins-marketing-hub",
+        category: "Conteúdo Recomendado",
+        title: "Idéias de Marketing por Evelin Lins",
+        provider: "Evelin Lins / Data Pulse Hub",
+        description: "Hub de conteúdos, estratégias e idéias de marketing voltados para dados.",
+        url: "https://evelinlins.github.io/data-pulse-hub/",
+        status: "pending",
+        notes: ""
+      },
+
       // LIÇÕES / AULAS PRÁTICAS
       {
         id: "notion-aula-if-while-for",
@@ -511,16 +523,6 @@
         notes: ""
       },
       {
-        id: "fluency-academy-curso",
-        category: "Lições / Aulas Práticas",
-        title: "Curso de idiomas FLUENCY ACADEMY",
-        provider: "Curso PAGO (Valores Acessíveis com Conversação)",
-        description: "Curso completo de idiomas com aulas e prática de conversação.",
-        url: "https://indiquei.app/J5f8gk",
-        status: "pending",
-        notes: ""
-      },
-      {
         id: "pandas-doc-oficial",
         category: "Lições / Aulas Práticas",
         title: "Documentação Oficial - Biblioteca Pandas",
@@ -553,14 +555,68 @@
 
       // LINKS ÚTEIS PARA INGLÊS
       {
-        id: "apps-ingles-sugestao",
+        id: "apps-ingles-duolingo",
         category: "Links úteis para Inglês",
-        title: "Sugestão de APPs para celular pra estudar inglês",
-        provider: "Duolingo & HelloTalk",
-        description: "• Duolingo: Gramática, pronúncia e vocabulário.\n• HelloTalk: Pratique conversação com estrangeiros via escrita ou áudio.\n(Ambos possuem versões gratuitas com limites diários e opções pagas).",
+        title: "Duolingo",
+        provider: "Aplicativo de Idiomas",
+        description: "Treine gramática, pronúncia e vocabulário diariamente no celular ou computador.",
         url: "https://www.duolingo.com/",
-        altUrl: "https://www.hellotalk.com/",
-        altUrlLabel: "HelloTalk ↗",
+        btnLabel: "Acessar Duolingo ↗",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "apps-ingles-hellotalk",
+        category: "Links úteis para Inglês",
+        title: "HelloTalk",
+        provider: "Prática de Conversação",
+        description: "Pratique conversação diretamente com estrangeiros nativos via texto ou áudio.",
+        url: "https://www.hellotalk.com/",
+        btnLabel: "Acessar HelloTalk ↗",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "fluency-academy-curso",
+        category: "Links úteis para Inglês",
+        title: "Curso de idiomas FLUENCY ACADEMY",
+        provider: "Curso PAGO (Valores Acessíveis com Conversação)",
+        description: "Curso completo de idiomas com aulas estruturadas e prática de conversação.",
+        url: "https://indiquei.app/J5f8gk",
+        btnLabel: "Acessar Fluency Academy ↗",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "episoden-conversacao",
+        category: "Links úteis para Inglês",
+        title: "Episoden",
+        provider: "Treino de Conversação Gratuito",
+        description: "Plataforma para praticar conversação em inglês com pessoas do mundo todo gratuitamente.",
+        url: "https://www.episoden.com",
+        btnLabel: "Acessar Episoden ↗",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "ifrs-cursos-idiomas",
+        category: "Links úteis para Inglês",
+        title: "Cursos de Idiomas - IFRS",
+        provider: "Instituto Federal do Rio Grande do Sul",
+        description: "Cursos focados em gramática e leitura, 100% gratuitos e com emissão de certificado.",
+        url: "https://moodle.ifrs.edu.br/course/index.php?categoryid=81",
+        btnLabel: "Acessar IFRS ↗",
+        status: "pending",
+        notes: ""
+      },
+      {
+        id: "youglish-pronuncia",
+        category: "Links úteis para Inglês",
+        title: "YouGlish",
+        provider: "Treino de Pronúncia com Vídeos",
+        description: "Use o YouTube para melhorar sua pronúncia em inglês. Pesquise palavras e veja trechos reais de falantes nativos.",
+        url: "https://pt.youglish.com/",
+        btnLabel: "Acessar YouGlish ↗",
         status: "pending",
         notes: ""
       },
@@ -1012,7 +1068,6 @@
     function stopTimer() {
       const totalSecs = getCurrentTotalSeconds();
       
-      // UX PROTECTION: Confirmação antes de finalizar se houver tempo rodando/acumulado
       if (totalSecs > 0) {
         const confirmStop = confirm("Deseja encerrar a sessão de estudos de hoje?");
         if (!confirmStop) return;
@@ -1196,11 +1251,12 @@
           if (course.isRestricted) {
             linkHtml = `<span class="btn-link restricted">🔒 Acesso Restrito</span>`;
           } else {
+            const labelText = course.btnLabel || 'Acessar ↗';
             const altLinkHtml = course.altUrl ? `
-              <a href="${course.altUrl}" target="_blank" class="btn-link alt-link">${course.altUrlLabel || 'Link Alternativo'} ↗</a>
+              <a href="${course.altUrl}" target="_blank" class="btn-link alt-link">${course.altUrlLabel || 'Link Alternativo ↗'}</a>
             ` : '';
             linkHtml = `
-              <a href="${course.url}" target="_blank" class="btn-link">Acessar ↗</a>
+              <a href="${course.url}" target="_blank" class="btn-link">${labelText}</a>
               ${altLinkHtml}
             `;
           }
